@@ -39,6 +39,7 @@ model User {
   notifications   Notification[]
   careerProfile   CareerProfile?
   aiConversations AIConversation[]
+  aiMessages      AIMessage[]
 }
 
 model Account {
@@ -312,6 +313,6 @@ model AIMessage {
   content        String
   createdAt      DateTime @default(now())
 
-  conversation     AIConversation @relation(onDelete: Cascade, references: [id], fields: [aIConversationId])
-  aIConversationId String
+  user         User          @relation(onDelete: Cascade, references: [id], fields: [userId])
+  conversation AIConversation @relation(onDelete: Cascade, references: [id], fields: [conversationId])
 }

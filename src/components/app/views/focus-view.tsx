@@ -48,25 +48,7 @@ export function FocusView() {
     setRemaining(duration * 60)
   }, [duration])
 
-  // Timer tick
-  React.useEffect(() => {
-    if (state !== "focusing") return
-    const id = setInterval(() => {
-      setRemaining((r) => {
-        if (r <= 1) {
-          clearInterval(id)
-          setState("completed")
-          completeSession()
-          return 0
-        }
-        return r - 1
-      })
-    }, 1000)
-    return () => clearInterval(id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state])
-
-  async function completeSession() {
+  const completeSession = React.useCallback(async () => {
     if (!sessionStart) return
     try {
       await mutate(() =>
@@ -94,7 +76,24 @@ export function FocusView() {
     } catch {
       toast.error("Failed to save focus session")
     }
-  }
+  }, [sessionStart, duration, mode, subjectId, mutate])
+
+  // Timer tick
+  React.useEffect(() => {
+    if (state !== "focusing") return
+    const id = setInterval(() => {
+      setRemaining((r) => {
+        if (r <= 1) {
+          clearInterval(id)
+          setState("completed")
+          completeSession()
+          return 0
+        }
+        return r - 1
+      })
+    }, 1000)
+    return () => clearInterval(id)
+  }, [state, completeSession])
 
   function start() {
     setState("focusing")

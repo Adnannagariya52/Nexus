@@ -37,7 +37,7 @@ export default function Page() {
     if (v && ["landing", "login", "signup", "forgot", "reset", "onboarding", "app"].includes(v)) {
       setView(v)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [])
 
   return (

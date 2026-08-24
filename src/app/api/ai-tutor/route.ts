@@ -159,9 +159,12 @@ export async function POST(req: Request) {
       assistantContent =
         completion?.choices?.[0]?.message?.content ||
         "I couldn't generate a response. Please try again."
-    } catch (err) {
+    } catch (err: any) {
+      console.error("[ai-tutor] ZAI error:", err?.message || err)
+      // Fallback: still store and return a friendly message so the UI flow works
       assistantContent =
-        "AI Tutor is temporarily unavailable. Please try again in a moment."
+        "I'm having trouble connecting to the AI service right now. Please try again in a moment — your conversation will still be saved.\n\n" +
+        (err?.message ? `\n\n*Debug: ${err.message.slice(0, 200)}*` : "")
     }
 
     // Save the assistant reply
@@ -185,7 +188,8 @@ export async function POST(req: Request) {
       conversationId: conversation.id,
       reply: assistantContent,
     })
-  } catch (err) {
+  } catch (err: any) {
+    console.error("[ai-tutor] route error:", err?.message || err, err?.stack)
     return NextResponse.json(
       { error: "AI Tutor is temporarily unavailable. Please try again." },
       { status: 500 },
