@@ -1,0 +1,317 @@
+// NEXUS - Student Operating System
+// Prisma schema (SQLite)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth & Profile ───────────────────────────────────────────────────────────
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+
+  profile         Profile?
+  subjects        Subject[]
+  assignments     Assignment[]
+  exams           Exam[]
+  notes           Note[]
+  goals           Goal[]
+  habits          Habit[]
+  habitLogs       HabitLog[]
+  studySessions   StudySession[]
+  focusSessions   FocusSession[]
+  achievements    Achievement[]
+  notifications   Notification[]
+  careerProfile   CareerProfile?
+  aiConversations AIConversation[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(onDelete: Cascade, references: [id], fields: [userId])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(onDelete: Cascade, references: [id], fields: [userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Student Profile (extends User) ──────────────────────────────────────────
+
+model Profile {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  fullName            String?
+  avatarUrl           String?
+  grade               String?
+  educationLevel      String?
+  stream              String?
+  schoolName          String?
+  studyTargetMinutes  Int      @default(60)
+  academicGoal        String?
+  onboardingCompleted Boolean  @default(false)
+  themePreference     String   @default("dark")
+  notificationPrefs   String   @default("{}")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(onDelete: Cascade, references: [id], fields: [userId])
+}
+
+// ─── Academic ─────────────────────────────────────────────────────────────────
+
+model Subject {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  color       String   @default("#5B8CFF")
+  icon        String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user            User             @relation(onDelete: Cascade, references: [id], fields: [userId])
+  chapters        Chapter[]
+  assignments     Assignment[]
+  exams           Exam[]
+  notes           Note[]
+  studySessions   StudySession[]
+  aiConversations AIConversation[]
+}
+
+model Chapter {
+  id          String   @id @default(cuid())
+  subjectId   String
+  title       String
+  description String?
+  status      String   @default("not_started") // not_started | in_progress | completed
+  progress    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subject Subject @relation(onDelete: Cascade, references: [id], fields: [subjectId])
+}
+
+model Assignment {
+  id               String    @id @default(cuid())
+  userId           String
+  subjectId        String?
+  title            String
+  description      String?
+  priority         String    @default("medium") // low | medium | high | urgent
+  status           String    @default("pending") // pending | in_progress | completed
+  dueDate          DateTime?
+  estimatedMinutes Int?
+  createdAt        DateTime  @default(now())
+  completedAt      DateTime?
+
+  user    User     @relation(onDelete: Cascade, references: [id], fields: [userId])
+  subject Subject? @relation(onDelete: SetNull, references: [id], fields: [subjectId])
+}
+
+model Exam {
+  id                  String   @id @default(cuid())
+  userId              String
+  subjectId           String?
+  title               String
+  examDate            DateTime
+  syllabus            String?
+  preparationProgress Int      @default(0)
+  createdAt           DateTime @default(now())
+
+  user    User     @relation(onDelete: Cascade, references: [id], fields: [userId])
+  subject Subject? @relation(onDelete: SetNull, references: [id], fields: [subjectId])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  userId    String
+  subjectId String?
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(onDelete: Cascade, references: [id], fields: [userId])
+  subject Subject? @relation(onDelete: SetNull, references: [id], fields: [subjectId])
+}
+
+// ─── Growth ───────────────────────────────────────────────────────────────────
+
+model Goal {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  targetDate  DateTime?
+  progress    Int       @default(0)
+  status      String    @default("on_track") // on_track | at_risk | completed
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(onDelete: Cascade, references: [id], fields: [userId])
+}
+
+model Habit {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  icon      String?
+  frequency String   @default("daily") // daily | weekly
+  color     String   @default("#5B8CFF")
+  createdAt DateTime @default(now())
+
+  user      User       @relation(onDelete: Cascade, references: [id], fields: [userId])
+  habitLogs HabitLog[]
+
+  @@unique([userId, name])
+}
+
+model HabitLog {
+  id            String   @id @default(cuid())
+  habitId       String
+  userId        String
+  completedDate DateTime
+  createdAt     DateTime @default(now())
+
+  habit Habit @relation(onDelete: Cascade, references: [id], fields: [habitId])
+  user  User  @relation(onDelete: Cascade, references: [id], fields: [userId])
+
+  @@unique([habitId, completedDate])
+}
+
+// ─── Study & Focus ────────────────────────────────────────────────────────────
+
+model StudySession {
+  id              String    @id @default(cuid())
+  userId          String
+  subjectId       String?
+  durationMinutes Int
+  startedAt       DateTime
+  completedAt     DateTime?
+  sessionType     String    @default("manual") // manual | focus | planned
+
+  user    User     @relation(onDelete: Cascade, references: [id], fields: [userId])
+  subject Subject? @relation(onDelete: SetNull, references: [id], fields: [subjectId])
+}
+
+model FocusSession {
+  id              String    @id @default(cuid())
+  userId          String
+  durationMinutes Int
+  status          String    @default("completed") // completed | abandoned
+  mode            String    @default("pomodoro")
+  startedAt       DateTime
+  completedAt     DateTime?
+
+  user User @relation(onDelete: Cascade, references: [id], fields: [userId])
+}
+
+// ─── Achievements & Notifications ─────────────────────────────────────────────
+
+model Achievement {
+  id              String   @id @default(cuid())
+  userId          String
+  achievementType String
+  title           String
+  description     String?
+  unlockedAt      DateTime @default(now())
+
+  user User @relation(onDelete: Cascade, references: [id], fields: [userId])
+
+  @@unique([userId, achievementType])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("info") // info | warning | success | achievement
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(onDelete: Cascade, references: [id], fields: [userId])
+}
+
+// ─── Career ──────────────────────────────────────────────────────────────────
+
+model CareerProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  interests       String   @default("[]")
+  skills          String   @default("[]")
+  strengths       String   @default("[]")
+  preferredFields String   @default("[]")
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(onDelete: Cascade, references: [id], fields: [userId])
+}
+
+// ─── AI Tutor ─────────────────────────────────────────────────────────────────
+
+model AIConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String   @default("New Conversation")
+  subjectId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User        @relation(onDelete: Cascade, references: [id], fields: [userId])
+  subject  Subject?    @relation(onDelete: SetNull, references: [id], fields: [subjectId])
+  messages AIMessage[]
+}
+
+model AIMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  role           String // user | assistant
+  content        String
+  createdAt      DateTime @default(now())
+
+  conversation     AIConversation @relation(onDelete: Cascade, references: [id], fields: [aIConversationId])
+  aIConversationId String
+}

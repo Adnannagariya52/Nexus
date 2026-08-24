@@ -1,0 +1,2312 @@
+BUILD A COMPLETE, PRODUCTION-QUALITY WEB APPLICATION FROM SCRATCH.
+
+APPLICATION NAME:
+NEXUS
+
+PRODUCT TYPE:
+Student Operating System / Academic Productivity Platform
+
+CORE TAGLINE:
+"Your entire student life. One intelligent system."
+
+IMPORTANT:
+This is NOT a simple landing page.
+This is NOT a dashboard mockup.
+This is NOT a collection of static pages.
+
+Build a fully functional multi-user web application with:
+
+- Landing website
+- Authentication
+- Google Sign-In
+- Secure user accounts
+- Database
+- User data isolation
+- Student onboarding
+- Dashboard
+- Subjects
+- Chapters
+- Assignments
+- Exams
+- Study planner
+- Focus timer
+- Study sessions
+- Notes
+- Goals
+- Habits
+- Analytics
+- Achievements
+- Career exploration
+- Global search / command palette
+- Notifications
+- Profile
+- Settings
+- AI Tutor / Doubt Solver powered by Gemini
+- Responsive mobile experience
+- Dark mode
+- Light mode
+- Premium animation system
+
+The final product must feel like a REAL startup product, not a school project.
+
+====================================================
+SECTION 1 — PRODUCT VISION
+====================================================
+
+NEXUS is a unified digital operating system for students.
+
+Students normally use separate apps for:
+
+Assignments
+Notes
+Exams
+Study timers
+Habit tracking
+Goals
+Analytics
+AI questions
+
+NEXUS combines all of these into one intelligent workspace.
+
+The primary user is:
+
+High school student
+College student
+Competitive exam student
+
+NEXUS should help users:
+
+Organize academic life
+Understand what to study next
+Track progress
+Prepare for exams
+Build habits
+Stay focused
+Understand difficult concepts
+Measure improvement
+
+The product should feel:
+
+Premium
+Modern
+Intelligent
+Minimal
+Fast
+Calm
+Powerful
+Personal
+
+The design must NOT feel:
+
+Like a government education portal
+Like a basic school dashboard
+Like a Bootstrap admin template
+Like a random AI-generated UI
+Like a gaming interface
+Like excessive cyberpunk
+Like excessive glassmorphism
+
+====================================================
+SECTION 2 — TECHNOLOGY
+====================================================
+
+Use the strongest supported modern stack.
+
+Preferred architecture:
+
+Frontend:
+React
+TypeScript
+Modern component architecture
+
+Styling:
+Tailwind CSS or equivalent modern utility system
+
+Animation:
+Framer Motion or equivalent
+
+Backend:
+Supabase
+
+Use:
+
+Supabase Auth
+Supabase PostgreSQL
+Supabase Row Level Security
+Supabase Storage
+Supabase Edge Functions
+
+AI:
+Google Gemini API
+
+IMPORTANT:
+
+Gemini API calls must NEVER happen directly from the browser.
+
+Correct architecture:
+
+Frontend
+↓
+Authenticated Supabase Edge Function
+↓
+Gemini API
+↓
+Edge Function
+↓
+Frontend
+
+Store Gemini API key as:
+
+GEMINI_API_KEY
+
+in server-side secrets.
+
+Never expose it in:
+
+Frontend code
+React components
+Public environment variables
+VITE variables
+NEXT_PUBLIC variables
+LocalStorage
+GitHub repository
+
+====================================================
+SECTION 3 — DESIGN INSPIRATION
+====================================================
+
+Create an ORIGINAL NEXUS design system inspired by the quality and sophistication of premium modern SaaS/productivity websites.
+
+Primary inspiration direction:
+
+Premium productivity SaaS
+Modern motion-heavy websites
+Sophisticated product landing pages
+Clean software interfaces
+
+The visual language should resemble the quality level of:
+
+Linear
+Raycast
+Arc
+Notion
+Apple
+Vercel
+
+DO NOT clone any website pixel-for-pixel.
+
+Create an original NEXUS identity.
+
+The design language must be consistent across:
+
+Landing page
+Authentication
+Onboarding
+Dashboard
+Every product page
+AI Tutor
+Mobile experience
+
+Everything must feel like one unified product.
+
+====================================================
+SECTION 4 — DESIGN SYSTEM
+====================================================
+
+PRIMARY DARK MODE:
+
+App background:
+#050608
+
+Secondary background:
+#090B10
+
+Surface:
+#0E1117
+
+Elevated surface:
+#131720
+
+Primary text:
+#F8FAFC
+
+Secondary text:
+#94A3B8
+
+Muted text:
+#64748B
+
+Border:
+rgba(255,255,255,0.08)
+
+Primary accent:
+#5B8CFF
+
+Secondary accent:
+#8B5CF6
+
+Supporting accent:
+#22D3EE
+
+Success:
+#22C55E
+
+Warning:
+#F59E0B
+
+Danger:
+#EF4444
+
+Use accent colors carefully.
+
+DO NOT make everything blue.
+
+DO NOT put glowing borders around every component.
+
+DO NOT overuse gradients.
+
+====================================================
+LIGHT MODE
+====================================================
+
+Background:
+#F7F8FC
+
+Surface:
+#FFFFFF
+
+Elevated:
+#FFFFFF
+
+Primary text:
+#0F172A
+
+Secondary:
+#64748B
+
+Border:
+#E2E8F0
+
+Primary accent:
+#4F7CFF
+
+Light mode must look equally premium.
+
+====================================================
+TYPOGRAPHY
+====================================================
+
+Use a modern sans-serif font.
+
+Headlines:
+
+Large
+Bold
+Tight letter spacing
+Strong hierarchy
+
+Body:
+
+Highly readable
+Comfortable line height
+
+Use a consistent scale.
+
+Never randomly change font sizes.
+
+====================================================
+LAYOUT
+====================================================
+
+Use:
+
+8px spacing system
+
+Responsive max-width containers
+
+Consistent grid
+
+Consistent card radius
+
+Consistent button heights
+
+Consistent input heights
+
+Avoid:
+
+Walls of cards
+Excessive rounded rectangles
+Everything inside a container
+Excessive borders
+
+====================================================
+SECTION 5 — MOTION DESIGN
+====================================================
+
+Motion should be a core part of NEXUS.
+
+But motion must feel:
+
+Elegant
+Fast
+Intentional
+Subtle
+
+Landing page:
+
+Parallax
+Scroll reveals
+Floating visual layers
+Animated gradients
+Interactive previews
+
+Application:
+
+Micro-interactions
+Staggered page entry
+Card hover
+Button feedback
+Animated progress
+Smooth navigation
+
+DO NOT:
+
+Animate everything constantly
+Use random spinning elements
+Use excessive floating objects
+Cause motion sickness
+
+Respect:
+
+prefers-reduced-motion
+
+====================================================
+SECTION 6 — LANDING PAGE
+====================================================
+
+Create a premium full marketing website.
+
+NAVBAR:
+
+Left:
+NEXUS logo
+
+Center:
+Product
+Features
+AI Tutor
+How It Works
+
+Right:
+Log In
+Get Started
+
+Navbar behavior:
+
+Transparent initially
+
+On scroll:
+
+Glass surface
+Background blur
+Subtle border
+Smooth transition
+
+----------------------------------------------------
+
+HERO:
+
+Large headline:
+
+"Your entire student life.
+One intelligent system."
+
+Supporting text:
+
+"Plan your studies, master your subjects, track your progress, and solve doubts — all from one beautifully designed workspace."
+
+Buttons:
+
+Enter NEXUS
+Explore Platform
+
+Hero visual:
+
+A premium animated interactive NEXUS interface preview.
+
+Show:
+
+Today's Mission
+Focus Timer
+Upcoming Exam
+Study Progress
+Tasks
+AI Tutor
+
+Use layered interface elements.
+
+Subtle depth.
+
+Subtle parallax.
+
+----------------------------------------------------
+
+HERO BACKGROUND:
+
+Dark sophisticated environment.
+
+Include:
+
+Subtle grid
+Soft radial light
+Blurred accent orbs
+Very subtle particles
+Slow movement
+
+Keep it premium.
+
+----------------------------------------------------
+
+PROBLEM SECTION:
+
+Headline:
+
+"Student life is scattered."
+
+Visually show:
+
+Notes
+Assignments
+Exams
+Goals
+Timers
+AI questions
+
+existing separately.
+
+Animate them as disconnected systems.
+
+----------------------------------------------------
+
+SOLUTION SECTION:
+
+"NEXUS brings everything together."
+
+Show NEXUS connecting everything into one ecosystem.
+
+----------------------------------------------------
+
+FEATURE SECTIONS:
+
+1. Smart Dashboard
+2. Subject Intelligence
+3. Assignment Management
+4. Exam Preparation
+5. Focus Mode
+6. AI Tutor
+7. Analytics
+8. Goals
+9. Habits
+10. Career Exploration
+
+Each section should have:
+
+Strong headline
+Short explanation
+Interactive visual
+Scroll animation
+
+----------------------------------------------------
+
+AI TUTOR SECTION:
+
+Show a realistic NEXUS AI conversation.
+
+Example:
+
+Student:
+"Explain Newton's third law simply."
+
+AI:
+Explanation with examples.
+
+Include animated typing effect.
+
+----------------------------------------------------
+
+FOCUS SECTION:
+
+Large cinematic timer preview.
+
+----------------------------------------------------
+
+ANALYTICS:
+
+Show beautiful animated charts.
+
+----------------------------------------------------
+
+FINAL CTA:
+
+Headline:
+
+"Your next academic breakthrough starts here."
+
+Button:
+
+Enter NEXUS
+
+====================================================
+SECTION 7 — AUTHENTICATION
+====================================================
+
+Use real Supabase Authentication.
+
+Support:
+
+Email + Password
+Google OAuth
+
+DO NOT build fake authentication.
+
+----------------------------------------------------
+
+LOGIN PAGE:
+
+Premium split-screen layout.
+
+LEFT:
+
+NEXUS branding
+
+Large message:
+
+"Your academic life,
+finally organized."
+
+Animated product visualization.
+
+RIGHT:
+
+Authentication panel.
+
+Title:
+
+"Welcome back"
+
+Subtitle:
+
+"Continue to your NEXUS workspace."
+
+Google button:
+
+Continue with Google
+
+Divider:
+
+OR
+
+Email
+
+Password
+
+Show/hide password
+
+Forgot password
+
+Login button
+
+Footer:
+
+Don't have an account?
+Create account
+
+----------------------------------------------------
+
+SIGNUP:
+
+Fields:
+
+Full Name
+Email
+Password
+Confirm Password
+
+Google sign up
+
+Password strength indicator.
+
+Minimum 8 characters.
+
+Validate confirm password.
+
+Show friendly errors.
+
+----------------------------------------------------
+
+FORGOT PASSWORD:
+
+Email input.
+
+Send reset link.
+
+Success state.
+
+Reset password page.
+
+----------------------------------------------------
+
+GOOGLE AUTH:
+
+Use Supabase OAuth.
+
+After authentication:
+
+If new user:
+
+Create profile
+Go to onboarding
+
+If existing user:
+
+Go to dashboard
+
+Prevent duplicate profiles.
+
+====================================================
+SECTION 8 — AUTH SECURITY
+====================================================
+
+Use Supabase auth as the source of truth.
+
+Implement:
+
+Session persistence
+Auth state listener
+Token refresh
+Secure logout
+
+Protected application routes.
+
+Unauthenticated users:
+
+Redirect to login.
+
+Authenticated users visiting login/signup:
+
+Redirect to app.
+
+Never use:
+
+Fake auth
+Manual localStorage user identity
+Hardcoded user IDs
+
+====================================================
+SECTION 9 — ONBOARDING
+====================================================
+
+Create premium multi-step onboarding.
+
+Step 1:
+
+Welcome
+
+"What should we call you?"
+
+Full name.
+
+Step 2:
+
+Education
+
+Grade
+Education level
+Stream
+
+Step 3:
+
+School
+
+Optional school name.
+
+Step 4:
+
+Academic goals.
+
+Examples:
+
+Improve grades
+Prepare for entrance exam
+Build study consistency
+Master difficult subjects
+
+Step 5:
+
+Study target.
+
+Daily study goal:
+
+30 min
+1 hour
+2 hours
+3 hours
+Custom
+
+Final:
+
+"Your NEXUS is ready."
+
+Animated transition into dashboard.
+
+====================================================
+SECTION 10 — DATABASE
+====================================================
+
+Create secure normalized database.
+
+PROFILES:
+
+id UUID PRIMARY KEY references auth.users(id)
+
+full_name
+email
+avatar_url
+grade
+education_level
+stream
+school_name
+study_target_minutes
+academic_goal
+onboarding_completed
+created_at
+updated_at
+
+----------------------------------------------------
+
+SUBJECTS:
+
+id
+user_id
+name
+color
+icon
+description
+created_at
+
+----------------------------------------------------
+
+CHAPTERS:
+
+id
+subject_id
+title
+description
+status
+progress
+created_at
+
+----------------------------------------------------
+
+ASSIGNMENTS:
+
+id
+user_id
+subject_id
+title
+description
+priority
+status
+due_date
+estimated_minutes
+created_at
+completed_at
+
+----------------------------------------------------
+
+EXAMS:
+
+id
+user_id
+subject_id
+title
+exam_date
+syllabus
+preparation_progress
+created_at
+
+----------------------------------------------------
+
+NOTES:
+
+id
+user_id
+subject_id
+title
+content
+created_at
+updated_at
+
+----------------------------------------------------
+
+GOALS:
+
+id
+user_id
+title
+description
+target_date
+progress
+status
+created_at
+
+----------------------------------------------------
+
+HABITS:
+
+id
+user_id
+name
+icon
+frequency
+created_at
+
+----------------------------------------------------
+
+HABIT_LOGS:
+
+id
+habit_id
+user_id
+completed_date
+created_at
+
+Prevent duplicate logs.
+
+----------------------------------------------------
+
+STUDY_SESSIONS:
+
+id
+user_id
+subject_id
+duration_minutes
+started_at
+completed_at
+session_type
+
+----------------------------------------------------
+
+FOCUS_SESSIONS:
+
+id
+user_id
+duration_minutes
+status
+started_at
+completed_at
+
+----------------------------------------------------
+
+ACHIEVEMENTS:
+
+id
+user_id
+achievement_type
+title
+description
+unlocked_at
+
+----------------------------------------------------
+
+NOTIFICATIONS:
+
+id
+user_id
+title
+message
+type
+read
+created_at
+
+----------------------------------------------------
+
+CAREER_PROFILE:
+
+id
+user_id
+interests
+skills
+strengths
+preferred_fields
+updated_at
+
+----------------------------------------------------
+
+AI_CONVERSATIONS:
+
+id
+user_id
+title
+subject_id
+created_at
+updated_at
+
+----------------------------------------------------
+
+AI_MESSAGES:
+
+id
+conversation_id
+user_id
+role
+content
+created_at
+
+Roles:
+
+user
+assistant
+
+====================================================
+SECTION 11 — DATABASE SECURITY
+====================================================
+
+Enable Row Level Security on EVERY user-owned table.
+
+NO EXCEPTIONS.
+
+For tables directly owned by user:
+
+SELECT:
+
+auth.uid() = user_id
+
+INSERT:
+
+auth.uid() = user_id
+
+UPDATE:
+
+auth.uid() = user_id
+
+DELETE:
+
+auth.uid() = user_id
+
+For related tables:
+
+Verify ownership through parent relationship.
+
+Example:
+
+Chapter:
+
+User may only access chapter if parent subject belongs to auth.uid().
+
+IMPORTANT:
+
+Never trust user_id sent by browser.
+
+The database must enforce ownership.
+
+====================================================
+SECTION 12 — USER DATA ISOLATION
+====================================================
+
+This is critical.
+
+Scenario:
+
+User A creates Assignment A.
+
+User B creates Assignment B.
+
+User A must:
+
+Only see Assignment A.
+
+User B must:
+
+Only see Assignment B.
+
+Even if a user:
+
+Changes URL
+Changes database ID
+Manipulates frontend request
+Uses browser developer tools
+
+They must not access another user's data.
+
+Apply this to:
+
+Profiles
+Subjects
+Chapters
+Assignments
+Exams
+Notes
+Goals
+Habits
+Habit logs
+Study sessions
+Focus sessions
+Achievements
+Notifications
+Career profile
+AI conversations
+AI messages
+
+====================================================
+SECTION 13 — DASHBOARD
+====================================================
+
+Route:
+
+/app
+
+Create a premium dashboard.
+
+NOT a boring grid of identical cards.
+
+TOP:
+
+Dynamic greeting:
+
+Good morning, [Name]
+
+Date.
+
+Show:
+
+Focus Score
+Current Streak
+Today's Progress
+
+MAIN SECTION:
+
+TODAY'S MISSION
+
+Make this visually dominant.
+
+Automatically prioritize:
+
+Most urgent assignment
+Nearest exam
+Weakest subject
+Recommended focus session
+
+SECONDARY:
+
+Upcoming exams timeline
+
+Today's tasks
+
+Subject progress
+
+Weekly study activity
+
+Goals
+
+Habits
+
+Achievements
+
+AI Tutor shortcut
+
+Use asymmetrical but balanced layout.
+
+====================================================
+SECTION 14 — SUBJECTS
+====================================================
+
+Route:
+
+/app/subjects
+
+Subject cards:
+
+Icon
+Subject name
+Progress ring
+Chapter count
+Study hours
+Next exam
+
+Hover:
+
+Subtle lift
+Border highlight
+
+Click:
+
+Open detailed subject page.
+
+SUBJECT DETAIL:
+
+Hero header.
+
+Progress.
+
+Chapter roadmap.
+
+Study history.
+
+Assignments.
+
+Notes.
+
+Exams.
+
+Quick actions.
+
+====================================================
+SECTION 15 — CHAPTERS
+====================================================
+
+Each chapter:
+
+Title
+Description
+Status
+
+Status:
+
+Not started
+In progress
+Completed
+
+Progress.
+
+Allow:
+
+Create
+Edit
+Delete
+Mark complete
+
+====================================================
+SECTION 16 — ASSIGNMENTS
+====================================================
+
+Route:
+
+/app/assignments
+
+Features:
+
+Create assignment
+Edit
+Delete
+Complete
+
+Fields:
+
+Title
+Description
+Subject
+Priority
+Due date
+Estimated study time
+
+Views:
+
+List
+Board optional
+Calendar optional
+
+Filters:
+
+All
+Today
+Upcoming
+Completed
+Overdue
+
+Priority:
+
+Low
+Medium
+High
+Urgent
+
+Completion animation.
+
+Overdue state.
+
+====================================================
+SECTION 17 — EXAMS
+====================================================
+
+Route:
+
+/app/exams
+
+Exam cards:
+
+Title
+Subject
+Date
+Countdown
+Preparation progress
+Syllabus
+
+Create exam.
+
+Edit.
+
+Delete.
+
+Live countdown.
+
+Timeline view.
+
+Urgency states:
+
+Normal
+Warning
+Critical
+
+====================================================
+SECTION 18 — STUDY PLANNER
+====================================================
+
+Route:
+
+/app/study
+
+Create a study planning workspace.
+
+Show:
+
+Today's study plan
+Upcoming exam priorities
+Assignments
+Subject progress
+
+Allow user to:
+
+Create study sessions
+Choose subject
+Choose duration
+Schedule session
+
+Weekly planner.
+
+Do not pretend AI recommendations are real unless they are implemented.
+
+====================================================
+SECTION 19 — FOCUS MODE
+====================================================
+
+Route:
+
+/app/focus
+
+Create cinematic focus mode.
+
+Large circular timer.
+
+Modes:
+
+Pomodoro
+Custom
+
+States:
+
+Ready
+Focusing
+Paused
+Completed
+
+Controls:
+
+Start
+Pause
+Resume
+Reset
+
+Choose:
+
+Subject
+Duration
+
+When completed:
+
+Elegant success state.
+
+Save focus session.
+
+Update:
+
+Analytics
+Study time
+Streak
+Achievements
+
+====================================================
+SECTION 20 — NOTES
+====================================================
+
+Route:
+
+/app/notes
+
+Features:
+
+Create
+Edit
+Delete
+Search
+Filter by subject
+
+Editor:
+
+Clean distraction-free experience.
+
+Notes grid/list.
+
+Empty state.
+
+Autosave if safely implemented.
+
+====================================================
+SECTION 21 — GOALS
+====================================================
+
+Route:
+
+/app/goals
+
+Goal:
+
+Title
+Description
+Target date
+Progress
+
+Status:
+
+On track
+At risk
+Completed
+
+Calculate intelligently based on:
+
+Progress
+Remaining time
+
+Animated progress.
+
+====================================================
+SECTION 22 — HABITS
+====================================================
+
+Route:
+
+/app/habits
+
+Features:
+
+Create habit.
+
+Track daily completion.
+
+Show:
+
+Current streak
+Best streak
+Weekly completion
+Calendar heatmap
+
+Prevent duplicate daily logs.
+
+====================================================
+SECTION 23 — ANALYTICS
+====================================================
+
+Route:
+
+/app/analytics
+
+Use REAL user data.
+
+Metrics:
+
+Study hours
+Focus sessions
+Subject distribution
+Task completion
+Habit consistency
+Goal progress
+
+Charts:
+
+Weekly study time
+Monthly study trend
+Subject breakdown
+Completion rate
+
+Charts animate.
+
+For new users:
+
+Beautiful empty state.
+
+Never fabricate analytics.
+
+====================================================
+SECTION 24 — ACHIEVEMENTS
+====================================================
+
+Route:
+
+/app/achievements
+
+Achievement examples:
+
+First Focus Session
+7 Day Streak
+50 Study Hours
+Assignment Master
+Early Starter
+Goal Crusher
+
+Unlocked:
+
+Highlighted.
+
+Locked:
+
+Muted.
+
+Unlock animation.
+
+====================================================
+SECTION 25 — CAREER
+====================================================
+
+Route:
+
+/app/career
+
+Career exploration workspace.
+
+Allow user to enter:
+
+Interests
+Skills
+Strengths
+Preferred fields
+
+Show career cards.
+
+Each:
+
+Career
+Description
+Required skills
+Study path
+
+IMPORTANT:
+
+Do not pretend recommendations are scientifically accurate.
+
+If advanced AI matching is not implemented, present it as exploration rather than authoritative recommendation.
+
+====================================================
+SECTION 26 — GLOBAL SEARCH
+====================================================
+
+Implement command palette.
+
+Keyboard shortcut:
+
+Ctrl + K
+
+Search:
+
+Subjects
+Assignments
+Exams
+Notes
+Goals
+AI conversations
+
+Keyboard navigation.
+
+ESC closes.
+
+====================================================
+SECTION 27 — NOTIFICATIONS
+====================================================
+
+Notification center.
+
+Examples:
+
+Assignment due soon
+Exam approaching
+Goal deadline
+Achievement unlocked
+Study target achieved
+
+Features:
+
+Unread badge
+Mark read
+Mark all read
+
+====================================================
+SECTION 28 — PROFILE
+====================================================
+
+Route:
+
+/app/profile
+
+Show:
+
+Avatar
+Name
+Email
+Education
+Grade
+Stream
+School
+Study target
+Academic goal
+
+Edit profile.
+
+Avatar upload.
+
+====================================================
+SECTION 29 — SETTINGS
+====================================================
+
+Route:
+
+/app/settings
+
+Sections:
+
+Account
+Appearance
+Notifications
+Study preferences
+Security
+
+Security:
+
+Change password
+Logout
+Delete account
+
+Delete account:
+
+Require confirmation.
+
+Never create a fake delete account button.
+
+====================================================
+SECTION 30 — AI TUTOR
+====================================================
+
+Route:
+
+/app/ai-tutor
+
+This is a flagship feature.
+
+Name:
+
+NEXUS AI Tutor
+
+Subtitle:
+
+"Your personal study companion."
+
+Build premium conversation UI.
+
+LEFT:
+
+New conversation
+
+Conversation history
+
+Search conversations
+
+Filter by subject
+
+MAIN:
+
+Conversation.
+
+BOTTOM:
+
+Message composer.
+
+Placeholder:
+
+"Ask anything about your studies..."
+
+Actions:
+
+Attach image
+Select subject
+Send
+
+====================================================
+SECTION 31 — AI TUTOR FEATURES
+====================================================
+
+Implement:
+
+New conversation
+Rename conversation
+Delete conversation
+Conversation persistence
+Conversation history
+Loading state
+Typing indicator
+Retry
+Copy response
+Regenerate response
+
+Do not create dead buttons.
+
+====================================================
+SECTION 32 — GEMINI AI
+====================================================
+
+Use Google Gemini through a secure server-side Edge Function.
+
+Environment secret:
+
+GEMINI_API_KEY
+
+Edge Function must:
+
+1. Verify authenticated user
+2. Verify conversation ownership
+3. Check rate limits
+4. Retrieve safe context
+5. Send prompt to Gemini
+6. Return sanitized response
+7. Store conversation messages
+
+Never expose Gemini API key.
+
+====================================================
+SECTION 33 — AI SYSTEM BEHAVIOR
+====================================================
+
+Use system instruction:
+
+"You are NEXUS AI Tutor, an intelligent educational assistant.
+
+Your purpose is to help students learn and understand.
+
+Adapt explanations to the student's education level and selected subject.
+
+Do not blindly provide answers when teaching is more useful.
+
+Explain concepts clearly.
+
+Use step-by-step explanations when appropriate.
+
+Use examples.
+
+For mathematics:
+Show calculations clearly.
+
+For physics:
+Explain formulas and variables.
+
+For chemistry:
+Explain concepts and reactions.
+
+For coding:
+Explain logic before giving code.
+
+If uncertain:
+Say that you are uncertain.
+
+Do not fabricate facts, citations, sources or textbook references.
+
+Be helpful but concise unless detailed explanation is requested."
+
+====================================================
+SECTION 34 — AI QUICK ACTIONS
+====================================================
+
+Add quick actions:
+
+Explain this
+Solve step-by-step
+Give an example
+Quiz me
+Summarize
+Simplify
+Check my answer
+
+Each should modify the prompt sent to AI.
+
+====================================================
+SECTION 35 — AI SUBJECT CONTEXT
+====================================================
+
+Allow:
+
+General
+Mathematics
+Physics
+Chemistry
+Biology
+Computer Science
+
+Pass selected subject context to AI.
+
+Pass safe student context:
+
+Grade
+Education level
+Selected subject
+
+Do not send unnecessary private data.
+
+====================================================
+SECTION 36 — IMAGE DOUBT SOLVING
+====================================================
+
+If supported:
+
+Allow student to upload image.
+
+Examples:
+
+Math question
+Physics diagram
+Chemistry equation
+
+Use:
+
+Supabase Storage.
+
+Secure storage access.
+
+Image should be sent securely to Gemini multimodal model.
+
+If multimodal implementation is not supported:
+
+DO NOT show a fake attachment feature.
+
+====================================================
+SECTION 37 — AI RATE LIMITING
+====================================================
+
+Prevent abuse.
+
+Require authenticated user.
+
+Implement reasonable rate limiting.
+
+Example:
+
+Requests per minute.
+
+Optional daily quota.
+
+Return friendly message if limit reached.
+
+Never expose raw API error.
+
+====================================================
+SECTION 38 — AI ERROR HANDLING
+====================================================
+
+If Gemini fails:
+
+"AI Tutor is temporarily unavailable. Please try again."
+
+Do not show:
+
+Raw API errors
+API keys
+Internal errors
+
+====================================================
+SECTION 39 — APP NAVIGATION
+====================================================
+
+DESKTOP:
+
+Premium collapsible sidebar.
+
+Sections:
+
+HOME
+
+Dashboard
+
+ORGANIZE
+
+Subjects
+Assignments
+Exams
+Notes
+
+STUDY
+
+Study Planner
+Focus
+
+GROW
+
+Goals
+Habits
+Analytics
+Achievements
+
+EXPLORE
+
+Career
+AI Tutor
+
+Bottom:
+
+Profile
+Settings
+
+Sidebar:
+
+Smooth expand/collapse.
+
+Active route indicator.
+
+====================================================
+SECTION 40 — MOBILE
+====================================================
+
+Fully responsive.
+
+Mobile navigation:
+
+Home
+Study
+Tasks
+AI
+Profile
+
+Secondary routes:
+
+Accessible via menu.
+
+Touch-friendly.
+
+No horizontal scrolling.
+
+====================================================
+SECTION 41 — ANIMATION SYSTEM
+====================================================
+
+PAGE ENTRY:
+
+Opacity:
+0 → 1
+
+Translate Y:
+10px → 0
+
+Use stagger.
+
+CARDS:
+
+Hover:
+
+translateY -2 to -4px
+
+Subtle border emphasis.
+
+BUTTONS:
+
+Hover:
+
+Small scale.
+
+Click:
+
+Small press feedback.
+
+MODALS:
+
+Fade + scale.
+
+PROGRESS:
+
+Animate from zero.
+
+CHARTS:
+
+Animate into view.
+
+LANDING:
+
+Parallax.
+
+Scroll reveal.
+
+Layered movement.
+
+====================================================
+SECTION 42 — LOADING STATES
+====================================================
+
+Never display only:
+
+Loading...
+
+Use:
+
+Skeleton dashboard.
+
+Skeleton cards.
+
+Skeleton tables.
+
+AI typing indicator.
+
+====================================================
+SECTION 43 — EMPTY STATES
+====================================================
+
+Examples:
+
+No assignments:
+
+"Nothing waiting for you."
+
+Button:
+
+Create assignment.
+
+No notes:
+
+"Your knowledge base starts here."
+
+No study sessions:
+
+"Your first session starts now."
+
+No AI conversations:
+
+"Ask your first question."
+
+====================================================
+SECTION 44 — ERROR HANDLING
+====================================================
+
+Convert backend errors into human messages.
+
+Examples:
+
+Wrong login:
+
+"Email or password is incorrect."
+
+Network issue:
+
+"Something went wrong. Please try again."
+
+Save failed:
+
+"We couldn't save that right now."
+
+====================================================
+SECTION 45 — ACCESSIBILITY
+====================================================
+
+Support:
+
+Keyboard navigation
+Visible focus states
+Semantic HTML
+ARIA labels
+Readable contrast
+Reduced motion preference
+
+====================================================
+SECTION 46 — PERFORMANCE
+====================================================
+
+Optimize:
+
+Images
+Animations
+Database queries
+Search
+
+Use:
+
+Lazy loading
+Debounced search
+Pagination when required
+Efficient Supabase queries
+
+Avoid:
+
+Unnecessary rerenders
+Huge bundles
+Heavy constant animations
+
+====================================================
+SECTION 47 — SECURITY AUDIT
+====================================================
+
+Before considering project complete:
+
+Audit entire project.
+
+Search for:
+
+Hardcoded user IDs
+Secret keys
+Gemini key exposure
+Service role key exposure
+Missing RLS
+Unsafe RLS
+Client-controlled user ownership
+Unprotected routes
+Unsecured Edge Functions
+Unsafe storage policies
+
+Fix everything.
+
+====================================================
+SECTION 48 — REQUIRED SECURITY TEST
+====================================================
+
+Conceptually test:
+
+USER A:
+
+Creates assignment.
+
+USER B:
+
+Creates assignment.
+
+Attempt:
+
+User A reads User B assignment.
+
+Result:
+
+DENIED.
+
+Attempt:
+
+User A updates User B assignment.
+
+Result:
+
+DENIED.
+
+Attempt:
+
+User A deletes User B assignment.
+
+Result:
+
+DENIED.
+
+Repeat for:
+
+Subjects
+Notes
+Exams
+Goals
+Habits
+Study sessions
+Focus sessions
+AI conversations
+AI messages
+
+====================================================
+SECTION 49 — STORAGE SECURITY
+====================================================
+
+Avatar uploads:
+
+User can upload own.
+
+User cannot modify another user's file.
+
+AI question images:
+
+User owns upload.
+
+Other users cannot access private uploads.
+
+Use secure storage policies.
+
+====================================================
+SECTION 50 — POLISHED COMPONENT SYSTEM
+====================================================
+
+Create reusable components:
+
+NexusButton
+NexusCard
+NexusInput
+NexusModal
+NexusBadge
+NexusProgress
+NexusEmptyState
+NexusSkeleton
+NexusToast
+NexusSidebar
+NexusHeader
+NexusCommandPalette
+NexusChart
+
+Do not duplicate UI code unnecessarily.
+
+====================================================
+SECTION 51 — FIRST 60 SECONDS EXPERIENCE
+====================================================
+
+The experience should be impressive immediately.
+
+0–5 seconds:
+
+Premium visual impact.
+
+5–20 seconds:
+
+User understands NEXUS.
+
+20–40 seconds:
+
+User sees real functionality.
+
+40–60 seconds:
+
+AI Tutor and Focus Mode demonstrate product depth.
+
+Target reaction:
+
+"This looks like a real startup."
+
+====================================================
+SECTION 52 — DEMO MODE
+====================================================
+
+If backend configuration is not complete:
+
+DO NOT pretend data is permanently saved.
+
+Clearly separate:
+
+Demo data
+
+from:
+
+Authenticated user data.
+
+Once Supabase is connected:
+
+Replace demo data with real data.
+
+====================================================
+SECTION 53 — FINAL QUALITY CHECK
+====================================================
+
+Before finishing, inspect:
+
+Landing page
+Login
+Signup
+Forgot password
+Onboarding
+Dashboard
+Subjects
+Subject detail
+Assignments
+Exams
+Study planner
+Focus
+Notes
+Goals
+Habits
+Analytics
+Achievements
+Career
+AI Tutor
+Search
+Notifications
+Profile
+Settings
+
+Check:
+
+Design consistency
+Spacing
+Typography
+Responsive behavior
+Dark mode
+Light mode
+Animations
+Loading states
+Empty states
+Error states
+Database persistence
+Security
+RLS
+Authentication
+User isolation
+
+Fix issues.
+
+====================================================
+FINAL INSTRUCTION
+====================================================
+
+DO NOT only generate static UI.
+
+DO NOT leave fake buttons.
+
+DO NOT create placeholder functionality and claim it works.
+
+Build NEXUS as a real functional product.
+
+Priority order:
+
+1. Security
+2. Authentication
+3. Database architecture
+4. User data isolation
+5. Core functionality
+6. AI Tutor
+7. Premium UI
+8. Motion design
+9. Mobile responsiveness
+10. Extra polish
+
+If a feature cannot be fully implemented, make that limitation clear rather than pretending it works.
+
+The finished product must feel like:
+
+A premium modern SaaS product
+
+combined with:
+
+A powerful student productivity operating system.
+
+NEXUS should be cohesive.
+
+Every screen should feel like it belongs to the same product.
+
+The result should be strong enough to demonstrate as a serious technology product in a student competition.
