@@ -148,9 +148,9 @@ export function FocusView() {
               transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
               className="absolute inset-0"
             >
-              <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-[#5B8CFF]/10 blur-3xl" />
-              <div className="absolute top-1/2 -right-32 h-64 w-64 rounded-full bg-[#8B5CF6]/10 blur-3xl" />
-              <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-[#22D3EE]/10 blur-3xl" />
+              <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-[#6C63FF]/10 blur-3xl" />
+              <div className="absolute top-1/2 -right-32 h-64 w-64 rounded-full bg-[#4238D6]/10 blur-3xl" />
+              <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-[#6C63FF]/10 blur-3xl" />
             </motion.div>
           </div>
 
@@ -170,9 +170,9 @@ export function FocusView() {
               <span
                 className={cn(
                   "h-1.5 w-1.5 rounded-full",
-                  state === "focusing" && "bg-[#5B8CFF] animate-pulse",
-                  state === "completed" && "bg-[#22C55E]",
-                  state === "paused" && "bg-[#F59E0B]",
+                  state === "focusing" && "bg-[#6C63FF] animate-pulse",
+                  state === "completed" && "bg-[#B8FF6A]",
+                  state === "paused" && "bg-[#FFB020]",
                   state === "ready" && "bg-muted-foreground",
                 )}
               />
@@ -199,9 +199,9 @@ export function FocusView() {
               />
               <defs>
                 <linearGradient id="focus-grad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#5B8CFF" />
-                  <stop offset="50%" stopColor="#8B5CF6" />
-                  <stop offset="100%" stopColor="#22D3EE" />
+                  <stop offset="0%" stopColor="#6C63FF" />
+                  <stop offset="50%" stopColor="#4238D6" />
+                  <stop offset="100%" stopColor="#6C63FF" />
                 </linearGradient>
               </defs>
               <motion.circle
@@ -282,7 +282,7 @@ export function FocusView() {
                   className={cn(
                     "rounded-lg border p-3 text-left transition-all",
                     duration === p.minutes
-                      ? "border-[#5B8CFF] bg-[#5B8CFF]/[0.08]"
+                      ? "border-[#6C63FF] bg-[#6C63FF]/[0.08]"
                       : "border-border bg-card hover:bg-accent",
                     (state === "focusing" || state === "paused") && "opacity-50 cursor-not-allowed",
                   )}
@@ -325,7 +325,7 @@ export function FocusView() {
               Today
             </div>
             <div className="flex items-center gap-2">
-              <Timer className="h-5 w-5 text-[#5B8CFF]" />
+              <Timer className="h-5 w-5 text-[#6C63FF]" />
               <div className="text-2xl font-semibold">
                 {Math.floor(todayMin / 60)}h {todayMin % 60}m
               </div>
@@ -358,7 +358,7 @@ export function FocusView() {
                 key={s.id}
                 className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
               >
-                <div className="h-8 w-8 rounded-lg bg-[#5B8CFF]/10 text-[#5B8CFF] flex items-center justify-center">
+                <div className="h-8 w-8 rounded-lg bg-[#6C63FF]/10 text-[#6C63FF] flex items-center justify-center">
                   <Flame className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -395,7 +395,7 @@ export function FocusView() {
                 initial={{ scale: 0, rotate: -30 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", delay: 0.2 }}
-                className="inline-flex h-16 w-16 rounded-full bg-gradient-to-br from-[#22C55E] to-[#5B8CFF] items-center justify-center mb-5 shadow-glow"
+                className="inline-flex h-16 w-16 rounded-full bg-gradient-to-br from-[#B8FF6A] to-[#6C63FF] items-center justify-center mb-5 shadow-glow"
               >
                 <CheckCircle2 className="h-8 w-8 text-white" />
               </motion.div>
@@ -407,15 +407,15 @@ export function FocusView() {
               </p>
               <div className="mt-6 grid grid-cols-3 gap-2 text-center">
                 <div className="rounded-lg border border-border bg-card p-3">
-                  <Zap className="h-3.5 w-3.5 mx-auto mb-1 text-[#5B8CFF]" />
+                  <Zap className="h-3.5 w-3.5 mx-auto mb-1 text-[#6C63FF]" />
                   <div className="text-xs font-medium">+{duration} min</div>
                 </div>
                 <div className="rounded-lg border border-border bg-card p-3">
-                  <Flame className="h-3.5 w-3.5 mx-auto mb-1 text-[#F59E0B]" />
+                  <Flame className="h-3.5 w-3.5 mx-auto mb-1 text-[#FFB020]" />
                   <div className="text-xs font-medium">Streak up</div>
                 </div>
                 <div className="rounded-lg border border-border bg-card p-3">
-                  <Timer className="h-3.5 w-3.5 mx-auto mb-1 text-[#22C55E]" />
+                  <Timer className="h-3.5 w-3.5 mx-auto mb-1 text-[#B8FF6A]" />
                   <div className="text-xs font-medium">{todayMin + duration}m today</div>
                 </div>
               </div>

@@ -113,7 +113,7 @@ export function StudyPlannerView() {
         {/* Log session */}
         <NexusCard className="p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Zap className="h-4 w-4 text-[#5B8CFF]" />
+            <Zap className="h-4 w-4 text-[#6C63FF]" />
             <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Log session
             </h3>
@@ -137,7 +137,7 @@ export function StudyPlannerView() {
                   className={cn(
                     "h-9 rounded-lg text-xs font-medium transition-colors",
                     duration === m
-                      ? "bg-[#5B8CFF] text-white"
+                      ? "bg-[#6C63FF] text-white"
                       : "bg-card border border-border hover:bg-accent",
                   )}
                 >
@@ -151,7 +151,7 @@ export function StudyPlannerView() {
             </NexusButton>
             <div className="text-[10px] text-muted-foreground">
               For a focused Pomodoro experience, use{" "}
-              <button onClick={() => navigate("focus")} className="text-[#5B8CFF] hover:underline">
+              <button onClick={() => navigate("focus")} className="text-[#6C63FF] hover:underline">
                 Focus Mode
               </button>
               .
@@ -163,7 +163,7 @@ export function StudyPlannerView() {
         <NexusCard className="lg:col-span-2 p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-[#22C55E]" />
+              <Target className="h-4 w-4 text-[#B8FF6A]" />
               <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Today's Priorities
               </h3>
@@ -216,7 +216,7 @@ export function StudyPlannerView() {
                         key={e.id}
                         className="flex items-center gap-2 rounded-lg border border-border bg-card p-2.5"
                       >
-                        <CalendarClock className="h-3.5 w-3.5 text-[#F59E0B]" />
+                        <CalendarClock className="h-3.5 w-3.5 text-[#FFB020]" />
                         <span className="text-xs truncate flex-1">{e.title}</span>
                         <span className="text-[10px] text-muted-foreground">
                           {days}d left
@@ -252,14 +252,14 @@ export function StudyPlannerView() {
                 className={cn(
                   "rounded-xl border p-3 text-center min-h-[110px] flex flex-col",
                   isToday
-                    ? "border-[#5B8CFF] bg-[#5B8CFF]/[0.04]"
+                    ? "border-[#6C63FF] bg-[#6C63FF]/[0.04]"
                     : "border-border bg-card",
                 )}
               >
                 <div
                   className={cn(
                     "text-[10px] uppercase tracking-wide font-medium",
-                    isToday ? "text-[#5B8CFF]" : "text-muted-foreground",
+                    isToday ? "text-[#6C63FF]" : "text-muted-foreground",
                   )}
                 >
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.day.getDay()]}
@@ -268,7 +268,7 @@ export function StudyPlannerView() {
                 <div className="flex-1" />
                 {isActive ? (
                   <div>
-                    <div className="text-base font-semibold" style={{ color: "#5B8CFF" }}>
+                    <div className="text-base font-semibold" style={{ color: "#6C63FF" }}>
                       {Math.floor(d.minutes / 60)}h
                     </div>
                     <div className="text-[9px] text-muted-foreground">
@@ -288,7 +288,7 @@ export function StudyPlannerView() {
       {subjectProgress.length > 0 && (
         <NexusCard className="p-5">
           <div className="flex items-center gap-2 mb-4">
-            <BookOpen className="h-4 w-4 text-[#8B5CF6]" />
+            <BookOpen className="h-4 w-4 text-[#4238D6]" />
             <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Subject Progress
             </h3>

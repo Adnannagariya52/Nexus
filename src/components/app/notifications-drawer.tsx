@@ -19,12 +19,12 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 }
 
 const COLORS: Record<string, string> = {
-  exam: "#F59E0B",
-  achievement: "#8B5CF6",
-  goal: "#22C55E",
-  habit: "#22D3EE",
-  warning: "#EF4444",
-  info: "#5B8CFF",
+  exam: "#FFB020",
+  achievement: "#4238D6",
+  goal: "#B8FF6A",
+  habit: "#6C63FF",
+  warning: "#E5484D",
+  info: "#6C63FF",
 }
 
 export function NotificationsDrawer() {
@@ -107,13 +107,13 @@ export function NotificationsDrawer() {
               ) : (
                 notifications.map((n) => {
                   const Icon = ICONS[n.type] || Bell
-                  const color = COLORS[n.type] || "#5B8CFF"
+                  const color = COLORS[n.type] || "#6C63FF"
                   return (
                     <div
                       key={n.id}
                       className={cn(
                         "rounded-xl border p-3 flex gap-3 transition-colors",
-                        n.read ? "border-border bg-card" : "border-[#5B8CFF]/20 bg-[#5B8CFF]/[0.04]",
+                        n.read ? "border-border bg-card" : "border-[#6C63FF]/20 bg-[#6C63FF]/[0.04]",
                       )}
                     >
                       <div

@@ -24,7 +24,7 @@ const CAREER_SUGGESTIONS = [
     skills: ["Programming", "Problem solving", "Algorithms", "Communication"],
     path: ["CS fundamentals", "Data structures", "Web/mobile dev", "System design"],
     icon: Cpu,
-    color: "#5B8CFF",
+    color: "#6C63FF",
     matchTags: ["computer_science", "problem_solving", "logic"],
   },
   {
@@ -34,7 +34,7 @@ const CAREER_SUGGESTIONS = [
     skills: ["Statistics", "Python/R", "ML", "Communication"],
     path: ["Math foundations", "Statistics", "ML algorithms", "Domain knowledge"],
     icon: BarChart3,
-    color: "#8B5CF6",
+    color: "#4238D6",
     matchTags: ["mathematics", "statistics", "data"],
   },
   {
@@ -44,7 +44,7 @@ const CAREER_SUGGESTIONS = [
     skills: ["Biology", "Empathy", "Communication", "Critical thinking"],
     path: ["Biology", "Chemistry", "Medical school", "Residency"],
     icon: Heart,
-    color: "#EF4444",
+    color: "#E5484D",
     matchTags: ["biology", "chemistry", "helping_others"],
   },
   {
@@ -54,7 +54,7 @@ const CAREER_SUGGESTIONS = [
     skills: ["Domain expertise", "Research methods", "Writing", "Critical thinking"],
     path: ["Undergrad in field", "Research experience", "Graduate studies", "Publishing"],
     icon: Atom,
-    color: "#22D3EE",
+    color: "#6C63FF",
     matchTags: ["physics", "chemistry", "biology", "curiosity"],
   },
   {
@@ -74,7 +74,7 @@ const CAREER_SUGGESTIONS = [
     skills: ["Physics", "Math", "Project management", "Communication"],
     path: ["Math + physics", "Engineering degree", "Internships", "Licensure"],
     icon: GraduationCap,
-    color: "#22C55E",
+    color: "#B8FF6A",
     matchTags: ["physics", "mathematics", "construction"],
   },
 ]
@@ -160,7 +160,7 @@ export function CareerView() {
 
       <NexusCard className="p-5">
         <div className="flex items-start gap-3 mb-2">
-          <div className="h-9 w-9 rounded-lg bg-[#22D3EE]/10 text-[#22D3EE] flex items-center justify-center">
+          <div className="h-9 w-9 rounded-lg bg-[#6C63FF]/10 text-[#6C63FF] flex items-center justify-center">
             <Compass className="h-4 w-4" />
           </div>
           <div>
@@ -182,7 +182,7 @@ export function CareerView() {
           onRemove={(v) => setInterests(interests.filter((i) => i !== v))}
           newValue={newInterest}
           onNewValueChange={setNewInterest}
-          color="#5B8CFF"
+          color="#6C63FF"
         />
         <TagInputCard
           title="Skills"
@@ -192,7 +192,7 @@ export function CareerView() {
           onRemove={(v) => setSkills(skills.filter((i) => i !== v))}
           newValue={newSkill}
           onNewValueChange={setNewSkill}
-          color="#8B5CF6"
+          color="#4238D6"
         />
         <TagInputCard
           title="Strengths"
@@ -202,7 +202,7 @@ export function CareerView() {
           onRemove={(v) => setStrengths(strengths.filter((i) => i !== v))}
           newValue={newStrength}
           onNewValueChange={setNewStrength}
-          color="#22C55E"
+          color="#B8FF6A"
         />
         <TagInputCard
           title="Preferred fields"
@@ -212,7 +212,7 @@ export function CareerView() {
           onRemove={(v) => setPreferredFields(preferredFields.filter((i) => i !== v))}
           newValue={newField}
           onNewValueChange={setNewField}
-          color="#F59E0B"
+          color="#FFB020"
         />
       </div>
 

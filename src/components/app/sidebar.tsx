@@ -145,7 +145,7 @@ export function Sidebar() {
           >
             <Bell className="h-4 w-4" />
             {unreadNotifs > 0 && (
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-[#EF4444] text-white text-[10px] font-medium flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-[#E5484D] text-white text-[10px] font-medium flex items-center justify-center">
                 {unreadNotifs}
               </span>
             )}
@@ -211,7 +211,7 @@ export function Sidebar() {
             >
               <Avatar className="h-8 w-8">
                 <AvatarImage src={snapshot?.profile?.avatarUrl || undefined} />
-                <AvatarFallback className="text-xs bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] text-white">
+                <AvatarFallback className="text-xs bg-gradient-to-br from-[#6C63FF] to-[#4238D6] text-white">
                   {(snapshot?.profile?.fullName || "U")
                     .split(" ")
                     .map((p) => p[0])
@@ -269,7 +269,7 @@ function SidebarItem({
       {active && (
         <motion.div
           layoutId="sidebar-active"
-          className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-[#5B8CFF]"
+          className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-[#6C63FF]"
           transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
         />
       )}

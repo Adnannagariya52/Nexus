@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface NexusLogoProps {
@@ -8,51 +9,50 @@ interface NexusLogoProps {
   withWordmark?: boolean
   className?: string
   wordmarkClassName?: string
+  animated?: boolean
+  variant?: "iris" | "adaptive"
 }
 
 export function NexusLogo({
-  size = 28,
+  size = 24,
   withWordmark = false,
   className,
   wordmarkClassName,
+  animated = false,
+  variant = "adaptive",
 }: NexusLogoProps) {
+  const strokeColor = variant === "iris" ? "#6C63FF" : "currentColor"
+
   return (
-    <div className={cn("flex items-center gap-2.5", className)}>
+    <div className={cn("flex items-center gap-2", className)}>
       <svg
         width={size}
         height={size}
-        viewBox="0 0 32 32"
+        viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden
       >
-        <defs>
-          <linearGradient id="nx-mark" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#5B8CFF" />
-            <stop offset="1" stopColor="#8B5CF6" />
-          </linearGradient>
-        </defs>
-        <rect width="32" height="32" rx="8" fill="currentColor" className="text-[#0E1117]" />
-        <rect width="32" height="32" rx="8" fill="currentColor" className="text-foreground opacity-[0.04]" />
-        <path
-          d="M9 22V10L23 22V10"
-          stroke="url(#nx-mark)"
-          strokeWidth="2.5"
+        <motion.path
+          d="M7 18V6l10 12V6"
+          stroke={strokeColor}
+          strokeWidth="2.6"
           strokeLinecap="round"
           strokeLinejoin="round"
+          initial={animated ? { pathLength: 0 } : false}
+          animate={animated ? { pathLength: 1 } : {}}
+          transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
         />
-        <circle cx="9" cy="10" r="1.6" fill="#5B8CFF" />
-        <circle cx="23" cy="22" r="1.6" fill="#8B5CF6" />
       </svg>
       {withWordmark && (
-        <span
-          className={cn(
-            "text-[17px] font-semibold tracking-tight",
-            wordmarkClassName,
-          )}
+        <motion.span
+          className={cn("text-[15px] font-semibold tracking-tight", wordmarkClassName)}
+          initial={animated ? { opacity: 0, x: -4 } : false}
+          animate={animated ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.4, delay: 0.8 }}
         >
           NEXUS
-        </span>
+        </motion.span>
       )}
     </div>
   )

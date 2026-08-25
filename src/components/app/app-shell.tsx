@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useSession } from "next-auth/react"
+import { useNexusAuth } from "@/components/providers/nexus-auth-provider"
 import { motion, AnimatePresence } from "framer-motion"
 import { useApp, type AppRoute } from "@/lib/store"
 import { DataProvider, useData } from "@/lib/data-client"
@@ -16,12 +16,12 @@ import { FullScreenProgress } from "@/components/nexus/full-screen-progress"
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow"
 
 export function AppShell() {
-  const { data: session, status } = useSession()
+  const { user, loading } = useNexusAuth()
   const setView = useApp((s) => s.setView)
 
-  if (status === "loading") return <FullScreenProgress />
+  if (loading) return <FullScreenProgress />
 
-  if (!session?.user) {
+  if (!user) {
     setView("login")
     return <FullScreenProgress />
   }

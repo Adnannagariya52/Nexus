@@ -4,7 +4,7 @@ import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useApp, type AppRoute } from "@/lib/store"
 import { NexusLogo } from "@/components/nexus/nexus-logo"
-import { signOut } from "next-auth/react"
+import { useNexusAuth } from "@/components/providers/nexus-auth-provider"
 import {
   LayoutDashboard,
   BookOpen,
@@ -144,8 +144,8 @@ export function MobileSidebar() {
                 </button>
               </div>
               <button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                className="flex items-center gap-2 w-full h-10 px-3 rounded-lg hover:bg-accent text-sm text-[#EF4444]"
+                onClick={() => signOut()}
+                className="flex items-center gap-2 w-full h-10 px-3 rounded-lg hover:bg-accent text-sm text-[#E5484D]"
               >
                 <LogOut className="h-4 w-4" />
                 Sign out

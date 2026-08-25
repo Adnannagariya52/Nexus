@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { signIn } from "next-auth/react"
+import { getSupabase } from "@/lib/supabase-client"
 import { useApp } from "@/lib/store"
 import { NexusLogo } from "@/components/nexus/nexus-logo"
 import { Button } from "@/components/ui/button"
@@ -26,13 +26,13 @@ export function AuthScreen({ mode }: { mode: Mode }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5 }}
-            className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-[#5B8CFF]/20 blur-[120px]"
+            className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-[#6C63FF]/20 blur-[120px]"
           />
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5, delay: 0.2 }}
-            className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#8B5CF6]/15 blur-[120px]"
+            className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#4238D6]/15 blur-[120px]"
           />
         </div>
 
@@ -69,10 +69,10 @@ export function AuthScreen({ mode }: { mode: Mode }) {
             transition={{ duration: 0.7, delay: 0.4 }}
             className="mt-10 relative"
           >
-            <div className="absolute -inset-6 bg-gradient-to-br from-[#5B8CFF]/20 to-transparent blur-3xl" />
+            <div className="absolute -inset-6 bg-gradient-to-br from-[#6C63FF]/20 to-transparent blur-3xl" />
             <div className="relative glass-strong border border-white/[0.08] rounded-2xl p-4 shadow-premium">
               <div className="flex items-center gap-2 text-xs text-white/40 mb-3">
-                <div className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />
+                <div className="h-1.5 w-1.5 rounded-full bg-[#B8FF6A] animate-pulse" />
                 Today's Mission
               </div>
               <div className="text-sm font-medium">Mathematics — Integration by Parts</div>
@@ -82,7 +82,7 @@ export function AuthScreen({ mode }: { mode: Mode }) {
                     initial={{ width: 0 }}
                     animate={{ width: "60%" }}
                     transition={{ duration: 1.5, delay: 0.8 }}
-                    className="h-full bg-gradient-to-r from-[#5B8CFF] to-[#8B5CF6]"
+                    className="h-full bg-gradient-to-r from-[#6C63FF] to-[#4238D6]"
                   />
                 </div>
                 <span className="text-[10px] text-white/40">60%</span>
@@ -128,10 +128,15 @@ function GoogleButton({ label }: { label: string }) {
       disabled={loading}
       onClick={async () => {
         setLoading(true)
-        toast.info(
-          "Google OAuth requires Supabase or Google Cloud setup. Try email/password for the demo.",
-        )
-        setTimeout(() => setLoading(false), 800)
+        const supabase = getSupabase()
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: { redirectTo: `${window.location.origin}/?view=app` },
+        })
+        if (error) {
+          toast.error("Google sign-in isn't configured yet. Use email/password for now.")
+          setLoading(false)
+        }
       }}
       className="w-full h-11 bg-white/[0.04] border-white/10 hover:bg-white/[0.08] hover:text-white text-white"
     >
@@ -172,13 +177,18 @@ function LoginCard() {
     setError(null)
     setLoading(true)
     try {
-      const res = await signIn("credentials", { email, password, redirect: false })
-      if (!res || res.error) {
+      const supabase = getSupabase()
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase().trim(),
+        password,
+      })
+      if (error) {
         setError("Email or password is incorrect.")
         setLoading(false)
         return
       }
-      window.location.reload()
+      // Force a full page reload so the server-side Supabase cookie is synced
+      window.location.href = "/"
     } catch {
       setError("Something went wrong. Please try again.")
       setLoading(false)
@@ -209,7 +219,7 @@ function LoginCard() {
             <Input
               id="email" type="email" autoComplete="email" required
               value={email} onChange={(e) => setEmail(e.target.value)}
-              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
               placeholder="you@school.edu"
             />
           </div>
@@ -221,7 +231,7 @@ function LoginCard() {
             <button
               type="button"
               onClick={() => setView("forgot")}
-              className="text-xs text-[#5B8CFF] hover:underline"
+              className="text-xs text-[#6C63FF] hover:underline"
             >
               Forgot password?
             </button>
@@ -231,7 +241,7 @@ function LoginCard() {
             <Input
               id="password" type={show ? "text" : "password"} autoComplete="current-password" required
               value={password} onChange={(e) => setPassword(e.target.value)}
-              className="h-11 pl-9 pr-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+              className="h-11 pl-9 pr-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
               placeholder="••••••••"
             />
             <button
@@ -248,7 +258,7 @@ function LoginCard() {
           <motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 text-xs text-[#EF4444]"
+            className="flex items-center gap-2 text-xs text-[#E5484D]"
           >
             <AlertCircle className="h-3.5 w-3.5" /> {error}
           </motion.div>
@@ -256,7 +266,7 @@ function LoginCard() {
 
         <Button
           type="submit" disabled={loading}
-          className="w-full h-11 bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] hover:shadow-[0_0_30px_-4px_rgba(91,140,255,0.5)] border-0"
+          className="w-full h-11 bg-gradient-to-br from-[#6C63FF] to-[#4238D6] hover:shadow-[0_0_30px_-4px_rgba(91,140,255,0.5)] border-0"
         >
           {loading ? "Signing in..." : "Log in"}
           {!loading && <ArrowRight className="h-4 w-4 ml-1" />}
@@ -265,7 +275,7 @@ function LoginCard() {
 
       <div className="mt-6 text-center text-xs text-white/50">
         Don't have an account?{" "}
-        <button onClick={() => setView("signup")} className="text-[#5B8CFF] hover:underline font-medium">
+        <button onClick={() => setView("signup")} className="text-[#6C63FF] hover:underline font-medium">
           Create account
         </button>
       </div>
@@ -295,7 +305,7 @@ function SignupCard() {
 
   const strength = strengthOf(password)
   const strengthLabels = ["Too short", "Weak", "Fair", "Good", "Strong"]
-  const strengthColors = ["#EF4444", "#EF4444", "#F59E0B", "#5B8CFF", "#22C55E"]
+  const strengthColors = ["#E5484D", "#E5484D", "#FFB020", "#6C63FF", "#B8FF6A"]
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
@@ -310,25 +320,28 @@ function SignupCard() {
     }
     setLoading(true)
     try {
-      const r = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, fullName }),
+      const supabase = getSupabase()
+      const { data, error } = await supabase.auth.signUp({
+        email: email.toLowerCase().trim(),
+        password,
+        options: { data: { full_name: fullName } },
       })
-      const json = await r.json()
-      if (!r.ok) {
-        setError(json.error || "We couldn't create your account right now.")
+      if (error) {
+        setError(error.message || "We couldn't create your account right now.")
         setLoading(false)
         return
       }
-      const res = await signIn("credentials", { email, password, redirect: false })
-      if (!res || res.error) {
-        setError("Account created. Please log in.")
+      if (data.session) {
+        window.location.href = "/"
+      } else if (data.user) {
+        setView("login")
+        setError("Account created. Please check your email to confirm.")
+        setLoading(false)
+      } else {
+        setError("Account created. Please check your email to confirm.")
         setView("login")
         setLoading(false)
-        return
       }
-      window.location.reload()
     } catch {
       setError("Something went wrong. Please try again.")
       setLoading(false)
@@ -358,7 +371,7 @@ function SignupCard() {
             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
             <Input
               id="name" required value={fullName} onChange={(e) => setFullName(e.target.value)}
-              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
               placeholder="Aarav Sharma"
             />
           </div>
@@ -370,7 +383,7 @@ function SignupCard() {
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
             <Input
               id="su-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
               placeholder="you@school.edu"
             />
           </div>
@@ -383,7 +396,7 @@ function SignupCard() {
             <Input
               id="su-password" type={show ? "text" : "password"} required
               value={password} onChange={(e) => setPassword(e.target.value)}
-              className="h-11 pl-9 pr-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+              className="h-11 pl-9 pr-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
               placeholder="At least 8 characters"
             />
             <button
@@ -419,15 +432,15 @@ function SignupCard() {
             <Input
               id="confirm" type={show ? "text" : "password"} required
               value={confirm} onChange={(e) => setConfirm(e.target.value)}
-              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
               placeholder="Re-enter your password"
             />
             {confirm.length > 0 && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
                 {confirm === password ? (
-                  <CheckCircle2 className="h-4 w-4 text-[#22C55E]" />
+                  <CheckCircle2 className="h-4 w-4 text-[#B8FF6A]" />
                 ) : (
-                  <AlertCircle className="h-4 w-4 text-[#EF4444]" />
+                  <AlertCircle className="h-4 w-4 text-[#E5484D]" />
                 )}
               </div>
             )}
@@ -438,7 +451,7 @@ function SignupCard() {
           <motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 text-xs text-[#EF4444]"
+            className="flex items-center gap-2 text-xs text-[#E5484D]"
           >
             <AlertCircle className="h-3.5 w-3.5" /> {error}
           </motion.div>
@@ -446,7 +459,7 @@ function SignupCard() {
 
         <Button
           type="submit" disabled={loading}
-          className="w-full h-11 bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] hover:shadow-[0_0_30px_-4px_rgba(91,140,255,0.5)] border-0"
+          className="w-full h-11 bg-gradient-to-br from-[#6C63FF] to-[#4238D6] hover:shadow-[0_0_30px_-4px_rgba(91,140,255,0.5)] border-0"
         >
           {loading ? "Creating account..." : "Create account"}
           {!loading && <ArrowRight className="h-4 w-4 ml-1" />}
@@ -455,7 +468,7 @@ function SignupCard() {
 
       <div className="mt-6 text-center text-xs text-white/50">
         Already have an account?{" "}
-        <button onClick={() => setView("login")} className="text-[#5B8CFF] hover:underline font-medium">
+        <button onClick={() => setView("login")} className="text-[#6C63FF] hover:underline font-medium">
           Log in
         </button>
       </div>
@@ -472,17 +485,29 @@ function ForgotCard() {
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => {
+    try {
+      const supabase = getSupabase()
+      const { error } = await supabase.auth.resetPasswordForEmail(email.toLowerCase().trim(), {
+        redirectTo: `${window.location.origin}/?view=reset`,
+      })
+      if (error) {
+        toast.error(error.message)
+        setLoading(false)
+        return
+      }
       setSent(true)
       setLoading(false)
-    }, 800)
+    } catch {
+      toast.error("Something went wrong. Please try again.")
+      setLoading(false)
+    }
   }
 
   if (sent) {
     return (
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-        <div className="inline-flex h-14 w-14 rounded-full bg-[#22C55E]/10 items-center justify-center mb-5">
-          <CheckCircle2 className="h-7 w-7 text-[#22C55E]" />
+        <div className="inline-flex h-14 w-14 rounded-full bg-[#B8FF6A]/10 items-center justify-center mb-5">
+          <CheckCircle2 className="h-7 w-7 text-[#B8FF6A]" />
         </div>
         <h2 className="text-2xl font-semibold">Check your inbox</h2>
         <p className="mt-2 text-sm text-white/50">
@@ -491,7 +516,7 @@ function ForgotCard() {
         </p>
         <Button
           onClick={() => setView("login")}
-          className="mt-6 w-full h-11 bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] border-0"
+          className="mt-6 w-full h-11 bg-gradient-to-br from-[#6C63FF] to-[#4238D6] border-0"
         >
           Back to login
         </Button>
@@ -516,14 +541,14 @@ function ForgotCard() {
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
             <Input
               id="fp-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+              className="h-11 pl-9 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
               placeholder="you@school.edu"
             />
           </div>
         </div>
         <Button
           type="submit" disabled={loading}
-          className="w-full h-11 bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] border-0"
+          className="w-full h-11 bg-gradient-to-br from-[#6C63FF] to-[#4238D6] border-0"
         >
           {loading ? "Sending..." : "Send reset link"}
         </Button>
@@ -545,9 +570,9 @@ function ResetCard() {
       <h2 className="text-2xl font-semibold tracking-tight">Reset your password</h2>
       <p className="mt-1.5 text-sm text-white/50">Enter your new password below.</p>
       <form onSubmit={(e) => { e.preventDefault(); setView("login") }} className="mt-7 space-y-4">
-        <Input type="password" required className="h-11 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20" placeholder="New password" />
-        <Input type="password" required className="h-11 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20" placeholder="Confirm new password" />
-        <Button type="submit" className="w-full h-11 bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] border-0">
+        <Input type="password" required className="h-11 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20" placeholder="New password" />
+        <Input type="password" required className="h-11 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20" placeholder="Confirm new password" />
+        <Button type="submit" className="w-full h-11 bg-gradient-to-br from-[#6C63FF] to-[#4238D6] border-0">
           Reset password
         </Button>
       </form>

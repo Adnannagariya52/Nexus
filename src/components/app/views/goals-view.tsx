@@ -99,7 +99,7 @@ export function GoalsView() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {goals.map((g, i) => {
             const status = g.status
-            const color = status === "completed" ? "#22C55E" : status === "at_risk" ? "#F59E0B" : "#5B8CFF"
+            const color = status === "completed" ? "#B8FF6A" : status === "at_risk" ? "#FFB020" : "#6C63FF"
             const Icon = status === "completed" ? CheckCircle2 : status === "at_risk" ? AlertCircle : Target
             return (
               <motion.div
@@ -132,7 +132,7 @@ export function GoalsView() {
                         onClick={() => {
                           if (confirm("Delete this goal?")) remove(g.id)
                         }}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#EF4444]"
+                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#E5484D]"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
@@ -158,7 +158,7 @@ export function GoalsView() {
                     max="100"
                     value={g.progress}
                     onChange={(e) => updateProgress(g.id, parseInt(e.target.value), g.targetDate)}
-                    className="w-full mt-3 accent-[#5B8CFF]"
+                    className="w-full mt-3 accent-[#6C63FF]"
                   />
 
                   {g.targetDate && (

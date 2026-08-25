@@ -129,7 +129,7 @@ export function ExamsView() {
                                 backgroundColor: e.subject
                                   ? `${e.subject.color}15`
                                   : "rgba(245,158,11,0.15)",
-                                color: e.subject?.color || "#F59E0B",
+                                color: e.subject?.color || "#FFB020",
                               }}
                             >
                               <CalendarClock className="h-5 w-5" />
@@ -145,7 +145,7 @@ export function ExamsView() {
                             onClick={() => {
                               if (confirm("Delete this exam?")) remove(e.id)
                             }}
-                            className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#EF4444]"
+                            className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#E5484D]"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -170,10 +170,10 @@ export function ExamsView() {
                               style={{
                                 color:
                                   urgency === "red"
-                                    ? "#EF4444"
+                                    ? "#E5484D"
                                     : urgency === "amber"
-                                      ? "#F59E0B"
-                                      : "#5B8CFF",
+                                      ? "#FFB020"
+                                      : "#6C63FF",
                               }}
                             >
                               {days}
@@ -195,7 +195,7 @@ export function ExamsView() {
                             max="100"
                             value={e.preparationProgress}
                             onChange={(ev) => updateProgress(e.id, parseInt(ev.target.value))}
-                            className="w-full h-1.5 accent-[#5B8CFF]"
+                            className="w-full h-1.5 accent-[#6C63FF]"
                           />
                         </div>
 

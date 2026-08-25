@@ -1,358 +1,699 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { Prisma } from "@prisma/client"
+import { createSupabaseServerClient } from "@/lib/supabase-server"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
-// All data access enforced through userId from session — equivalent of RLS.
-// This is a single endpoint that handles create/update/delete for user-owned resources.
+// ─────────────────────────────────────────────────────────────────────────────
+// NEXUS — Unified data API (Supabase backed).
+//
+// All reads/writes are scoped to the authenticated user. RLS policies on each
+// table enforce ownership; we additionally inject user_id on create, verify
+// parent ownership for chapters/ai_messages/habit_logs, and deduplicate
+// habit_logs (per habit per day) and achievements (per user per type).
+//
+// The client speaks camelCase; the database speaks snake_case. We convert at
+// the boundary so the rest of the app can stay camelCase end-to-end.
+// ─────────────────────────────────────────────────────────────────────────────
 
-const MODELS = {
-  subject: "subject",
-  chapter: "chapter",
-  assignment: "assignment",
-  exam: "exam",
-  note: "note",
-  goal: "goal",
-  habit: "habit",
-  habitLog: "habitLog",
-  studySession: "studySession",
-  focusSession: "focusSession",
-  notification: "notification",
-  careerProfile: "careerProfile",
-  aiConversation: "aiConversation",
-  aiMessage: "aiMessage",
-  profile: "profile",
-  achievement: "achievement",
-} as const
+type ModelKey =
+  | "subject"
+  | "chapter"
+  | "assignment"
+  | "exam"
+  | "note"
+  | "goal"
+  | "habit"
+  | "habitLog"
+  | "studySession"
+  | "focusSession"
+  | "notification"
+  | "careerProfile"
+  | "aiConversation"
+  | "aiMessage"
+  | "profile"
+  | "achievement"
 
-type ModelKey = keyof typeof MODELS
-
-interface Owned {
-  userId?: string | null
-  subjectId?: string | null
-  conversationId?: string | null
-  habitId?: string | null
+const TABLE: Record<ModelKey, string> = {
+  subject: "subjects",
+  chapter: "chapters",
+  assignment: "assignments",
+  exam: "exams",
+  note: "notes",
+  goal: "goals",
+  habit: "habits",
+  habitLog: "habit_logs",
+  studySession: "study_sessions",
+  focusSession: "focus_sessions",
+  notification: "notifications",
+  careerProfile: "career_profiles",
+  aiConversation: "ai_conversations",
+  aiMessage: "ai_messages",
+  profile: "profiles",
+  achievement: "achievements",
 }
 
-async function getSubjectOwner(subjectId: string) {
-  const s = await db.subject.findUnique({ where: { id: subjectId }, select: { userId: true } })
-  return s?.userId
-}
-async function getConversationOwner(conversationId: string) {
-  const c = await db.aIConversation.findUnique({
-    where: { id: conversationId },
-    select: { userId: true },
-  })
-  return c?.userId
-}
-async function getHabitOwner(habitId: string) {
-  const h = await db.habit.findUnique({ where: { id: habitId }, select: { userId: true } })
-  return h?.userId
+// Fields the client must not be allowed to set directly. They are either
+// server-managed or injected by this route.
+const SERVER_MANAGED = new Set([
+  "id",
+  "user_id",
+  "created_at",
+  "updated_at",
+  "unlocked_at",
+])
+
+// ─── camelCase <-> snake_case ─────────────────────────────────────────────────
+
+function toCamelKey(key: string): string {
+  return key.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase())
 }
 
-async function assertOwnership(model: ModelKey, id: string, userId: string): Promise<boolean> {
-  switch (model) {
-    case "subject": {
-      const r = await db.subject.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
+function toSnakeKey(key: string): string {
+  return key.replace(/([A-Z])/g, "_$1").toLowerCase()
+}
+
+function toCamel(obj: unknown): unknown {
+  if (obj === null || obj === undefined) return obj
+  if (Array.isArray(obj)) return obj.map(toCamel)
+  if (obj instanceof Date) return obj.toISOString()
+  if (typeof obj === "object") {
+    const out: Record<string, unknown> = {}
+    for (const k of Object.keys(obj as Record<string, unknown>)) {
+      out[toCamelKey(k)] = toCamel((obj as Record<string, unknown>)[k])
     }
-    case "chapter": {
-      const c = await db.chapter.findUnique({ where: { id }, select: { subject: { select: { userId: true } } } })
-      return c?.subject?.userId === userId
+    return out
+  }
+  return obj
+}
+
+function toSnake(obj: unknown): unknown {
+  if (obj === null || obj === undefined) return obj
+  if (Array.isArray(obj)) return obj.map(toSnake)
+  if (obj instanceof Date) return obj.toISOString()
+  if (typeof obj === "object") {
+    const out: Record<string, unknown> = {}
+    for (const k of Object.keys(obj as Record<string, unknown>)) {
+      out[toSnakeKey(k)] = toSnake((obj as Record<string, unknown>)[k])
     }
-    case "assignment": {
-      const r = await db.assignment.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "exam": {
-      const r = await db.exam.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "note": {
-      const r = await db.note.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "goal": {
-      const r = await db.goal.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "habit": {
-      const r = await db.habit.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "habitLog": {
-      const r = await db.habitLog.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "studySession": {
-      const r = await db.studySession.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "focusSession": {
-      const r = await db.focusSession.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "notification": {
-      const r = await db.notification.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "careerProfile": {
-      const r = await db.careerProfile.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "aiConversation": {
-      const r = await db.aIConversation.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "aiMessage": {
-      const r = await db.aIMessage.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "profile": {
-      const r = await db.profile.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    case "achievement": {
-      const r = await db.achievement.findUnique({ where: { id }, select: { userId: true } })
-      return r?.userId === userId
-    }
-    default:
-      return false
+    return out
+  }
+  return obj
+}
+
+/** Convert + strip server-managed fields from a client payload. */
+function sanitizeInsert(snakeData: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(snakeData)) {
+    if (SERVER_MANAGED.has(k)) continue
+    out[k] = v
+  }
+  return out
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+async function getAuthUser(supabase: SupabaseClient) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  return user
+}
+
+// ─── Parent ownership verification ────────────────────────────────────────────
+
+async function subjectBelongsToUser(
+  supabase: SupabaseClient,
+  subjectId: string,
+  userId: string,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("subjects")
+    .select("id")
+    .eq("id", subjectId)
+    .eq("user_id", userId)
+    .maybeSingle()
+  return !!data
+}
+
+async function conversationBelongsToUser(
+  supabase: SupabaseClient,
+  conversationId: string,
+  userId: string,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("ai_conversations")
+    .select("id")
+    .eq("id", conversationId)
+    .eq("user_id", userId)
+    .maybeSingle()
+  return !!data
+}
+
+async function habitBelongsToUser(
+  supabase: SupabaseClient,
+  habitId: string,
+  userId: string,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("habits")
+    .select("id")
+    .eq("id", habitId)
+    .eq("user_id", userId)
+    .maybeSingle()
+  return !!data
+}
+
+// ─── Snapshot GET ─────────────────────────────────────────────────────────────
+
+async function fetchSnapshot(supabase: SupabaseClient, userId: string) {
+  const [
+    profile,
+    subjects,
+    assignments,
+    exams,
+    notes,
+    goals,
+    habits,
+    habitLogs,
+    studySessions,
+    focusSessions,
+    achievements,
+    notifications,
+    careerProfile,
+    aiConversations,
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle()
+      .then((r) => r.data),
+    supabase
+      .from("subjects")
+      .select("*, chapters(*)")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("assignments")
+      .select("*, subject:subjects(*)")
+      .eq("user_id", userId)
+      .order("due_date", { ascending: true, nullsFirst: false })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("exams")
+      .select("*, subject:subjects(*)")
+      .eq("user_id", userId)
+      .order("exam_date", { ascending: true })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("notes")
+      .select("*")
+      .eq("user_id", userId)
+      .order("updated_at", { ascending: false })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("goals")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("habits")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("habit_logs")
+      .select("*")
+      .eq("user_id", userId)
+      .then((r) => r.data ?? []),
+    supabase
+      .from("study_sessions")
+      .select("*")
+      .eq("user_id", userId)
+      .order("started_at", { ascending: false })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("focus_sessions")
+      .select("*")
+      .eq("user_id", userId)
+      .order("started_at", { ascending: false })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("achievements")
+      .select("*")
+      .eq("user_id", userId)
+      .order("unlocked_at", { ascending: false })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("notifications")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .then((r) => r.data ?? []),
+    supabase
+      .from("career_profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle()
+      .then((r) => r.data),
+    supabase
+      .from("ai_conversations")
+      .select("*")
+      .eq("user_id", userId)
+      .order("updated_at", { ascending: false })
+      .limit(50)
+      .then((r) => r.data ?? []),
+  ])
+
+  return {
+    profile,
+    subjects,
+    assignments,
+    exams,
+    notes,
+    goals,
+    habits,
+    habitLogs,
+    studySessions,
+    focusSessions,
+    achievements,
+    notifications,
+    careerProfile,
+    aiConversations,
   }
 }
 
+// ─── Per-model list GET ───────────────────────────────────────────────────────
+
+async function listByModel(
+  supabase: SupabaseClient,
+  model: ModelKey,
+  userId: string,
+  filter?: string | null,
+): Promise<unknown[]> {
+  const table = TABLE[model]
+  if (!table) return []
+
+  // Determine which user-owned column to scope by. Profiles are keyed by id.
+  const userColumn =
+    model === "profile" ? "id" : model === "careerProfile" ? "user_id" : "user_id"
+
+  let query = supabase.from(table).select("*")
+
+  // Special-case relations we need to eager-load to match the prior Prisma API.
+  if (model === "subject") {
+    query = supabase.from(table).select("*, chapters(*)")
+  } else if (model === "assignment" || model === "exam") {
+    query = supabase.from(table).select("*, subject:subjects(*)")
+  } else if (model === "aiConversation") {
+    query = supabase.from(table).select("*, ai_messages(*)")
+  }
+
+  // Always scope by the authenticated user (defence-in-depth — RLS also enforces).
+  query = query.eq(userColumn, userId)
+
+  // Optional secondary filter (e.g. `?filter=subject:123` or `conversation:abc`).
+  if (filter) {
+    const [k, v] = filter.split(":")
+    if (!v) {
+      // ignore malformed filter
+    } else if (k === "subject") {
+      query = query.eq("subject_id", v)
+    } else if (k === "conversation") {
+      query = query.eq("conversation_id", v)
+    } else if (k === "habit") {
+      query = query.eq("habit_id", v)
+    }
+  }
+
+  // Orderings mirror the previous Prisma behaviour for client UX stability.
+  switch (model) {
+    case "subject":
+    case "chapter":
+      query = query.order("created_at", { ascending: true })
+      break
+    case "assignment":
+      query = query.order("due_date", { ascending: true, nullsFirst: false })
+      break
+    case "exam":
+      query = query.order("exam_date", { ascending: true })
+      break
+    case "note":
+      query = query.order("updated_at", { ascending: false })
+      break
+    case "goal":
+    case "habit":
+      query = query.order("created_at", { ascending: false })
+      break
+    case "studySession":
+    case "focusSession":
+      query = query.order("started_at", { ascending: false })
+      break
+    case "notification":
+      query = query.order("created_at", { ascending: false })
+      break
+    case "aiConversation":
+      query = query.order("updated_at", { ascending: false })
+      break
+    case "achievement":
+      query = query.order("unlocked_at", { ascending: false })
+      break
+    case "aiMessage":
+      query = query.order("created_at", { ascending: true })
+      break
+  }
+
+  const { data, error } = await query
+  if (error) {
+    console.error(`[data] listByModel(${model}) error:`, error.message)
+    return []
+  }
+  return (data as unknown[]) ?? []
+}
+
+// ─── Create ───────────────────────────────────────────────────────────────────
+
+async function createByModel(
+  supabase: SupabaseClient,
+  model: ModelKey,
+  userId: string,
+  data: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const snake = sanitizeInsert(
+    toSnake(data) as Record<string, unknown>,
+  ) as Record<string, unknown>
+  const table = TABLE[model]
+
+  switch (model) {
+    case "subject":
+    case "assignment":
+    case "exam":
+    case "note":
+    case "goal":
+    case "habit":
+    case "studySession":
+    case "focusSession":
+    case "notification":
+    case "aiConversation": {
+      const { data: row, error } = await supabase
+        .from(table)
+        .insert({ ...snake, user_id: userId })
+        .select("*")
+        .single()
+      if (error) throw new Error(error.message)
+      return row as Record<string, unknown>
+    }
+
+    case "chapter": {
+      // Verify the parent subject belongs to this user before creating.
+      if (snake.subject_id) {
+        const ok = await subjectBelongsToUser(
+          supabase,
+          String(snake.subject_id),
+          userId,
+        )
+        if (!ok) throw new Error("Not found or access denied.")
+      }
+      const { data: row, error } = await supabase
+        .from(table)
+        .insert(snake)
+        .select("*")
+        .single()
+      if (error) throw new Error(error.message)
+      return row as Record<string, unknown>
+    }
+
+    case "habitLog": {
+      // Verify habit ownership.
+      if (snake.habit_id) {
+        const ok = await habitBelongsToUser(
+          supabase,
+          String(snake.habit_id),
+          userId,
+        )
+        if (!ok) throw new Error("Not found or access denied.")
+      }
+      // Normalise completed_date to start-of-day UTC so the unique
+      // (habit_id, completed_date) constraint dedupes per calendar day.
+      const raw = snake.completed_date
+        ? new Date(String(snake.completed_date))
+        : new Date()
+      const dayStart = new Date(
+        Date.UTC(
+          raw.getUTCFullYear(),
+          raw.getUTCMonth(),
+          raw.getUTCDate(),
+        ),
+      )
+      const iso = dayStart.toISOString()
+
+      // Prevent duplicate daily logs: if one exists, return it as-is.
+      const { data: existing } = await supabase
+        .from(table)
+        .select("*")
+        .eq("habit_id", String(snake.habit_id))
+        .eq("completed_date", iso)
+        .maybeSingle()
+      if (existing) return existing as Record<string, unknown>
+
+      const { data: row, error } = await supabase
+        .from(table)
+        .insert({
+          ...snake,
+          user_id: userId,
+          completed_date: iso,
+        })
+        .select("*")
+        .single()
+      if (error) throw new Error(error.message)
+      return row as Record<string, unknown>
+    }
+
+    case "aiMessage": {
+      // Verify parent conversation ownership before inserting.
+      if (snake.conversation_id) {
+        const ok = await conversationBelongsToUser(
+          supabase,
+          String(snake.conversation_id),
+          userId,
+        )
+        if (!ok) throw new Error("Not found or access denied.")
+      }
+      const { data: row, error } = await supabase
+        .from(table)
+        .insert({ ...snake, user_id: userId })
+        .select("*")
+        .single()
+      if (error) throw new Error(error.message)
+      return row as Record<string, unknown>
+    }
+
+    case "careerProfile": {
+      // One row per user — upsert by user_id.
+      const { data: row, error } = await supabase
+        .from(table)
+        .upsert(
+          { ...snake, user_id: userId },
+          { onConflict: "user_id" },
+        )
+        .select("*")
+        .single()
+      if (error) throw new Error(error.message)
+      return row as Record<string, unknown>
+    }
+
+    case "profile": {
+      // Profiles are keyed by user id; email comes from auth.users.
+      const { data: authUser } = await supabase.auth.getUser()
+      const email = authUser?.user?.email ?? null
+      const { data: row, error } = await supabase
+        .from(table)
+        .upsert(
+          { ...snake, id: userId, email },
+          { onConflict: "id" },
+        )
+        .select("*")
+        .single()
+      if (error) throw new Error(error.message)
+      return row as Record<string, unknown>
+    }
+
+    case "achievement": {
+      // Deduplicate by (user_id, achievement_type) — return existing if present.
+      if (snake.achievement_type) {
+        const { data: existing } = await supabase
+          .from(table)
+          .select("*")
+          .eq("user_id", userId)
+          .eq("achievement_type", String(snake.achievement_type))
+          .maybeSingle()
+        if (existing) return existing as Record<string, unknown>
+      }
+      const { data: row, error } = await supabase
+        .from(table)
+        .insert({ ...snake, user_id: userId })
+        .select("*")
+        .single()
+      if (error) throw new Error(error.message)
+      return row as Record<string, unknown>
+    }
+
+    default:
+      throw new Error("Unknown model")
+  }
+}
+
+// ─── Update ───────────────────────────────────────────────────────────────────
+
+async function updateByModel(
+  supabase: SupabaseClient,
+  model: ModelKey,
+  id: string,
+  data: Record<string, unknown>,
+): Promise<Record<string, unknown> | null> {
+  const snake = sanitizeInsert(
+    toSnake(data) as Record<string, unknown>,
+  ) as Record<string, unknown>
+  const table = TABLE[model]
+
+  // RLS enforces ownership: rows not owned by the user are invisible to both
+  // the WHERE filter and the RETURNING clause. A null result means "not found
+  // or access denied" — the caller maps that to a 404.
+  const { data: row, error } = await supabase
+    .from(table)
+    .update(snake)
+    .eq("id", id)
+    .select("*")
+    .maybeSingle()
+
+  if (error) throw new Error(error.message)
+  return (row as Record<string, unknown>) ?? null
+}
+
+// ─── Delete ───────────────────────────────────────────────────────────────────
+
+async function deleteByModel(
+  supabase: SupabaseClient,
+  model: ModelKey,
+  id: string,
+): Promise<boolean> {
+  const table = TABLE[model]
+  // RLS ensures only owned rows can be deleted.
+  const { error, count } = await supabase
+    .from(table)
+    .delete({ count: "exact" })
+    .eq("id", id)
+
+  if (error) throw new Error(error.message)
+  return (count ?? 0) > 0
+}
+
+// ─── GET handler ──────────────────────────────────────────────────────────────
+
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
+    const supabase = await createSupabaseServerClient()
+    const user = await getAuthUser(supabase)
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-    const userId = session.user.id
+    const userId = user.id
+
     const url = new URL(req.url)
-    const model = url.searchParams.get("model") as ModelKey
-    const id = url.searchParams.get("id")
-    const filter = url.searchParams.get("filter") // e.g. "subject:xyz"
+    const model = url.searchParams.get("model") as ModelKey | null
+    const filter = url.searchParams.get("filter")
 
+    // No model → unified snapshot for the dashboard.
     if (!model) {
-      // Return a unified snapshot for the dashboard
-      const [profile, subjects, assignments, exams, notes, goals, habits, habitLogs, studySessions, focusSessions, achievements, notifications, careerProfile, aiConversations] =
-        await Promise.all([
-          db.profile.findUnique({ where: { userId } }),
-          db.subject.findMany({ where: { userId }, include: { chapters: true, _count: { select: { assignments: true, exams: true, notes: true } } }, orderBy: { createdAt: "asc" } }),
-          db.assignment.findMany({ where: { userId }, include: { subject: true }, orderBy: { dueDate: "asc" } }),
-          db.exam.findMany({ where: { userId }, include: { subject: true }, orderBy: { examDate: "asc" } }),
-          db.note.findMany({ where: { userId }, orderBy: { updatedAt: "desc" } }),
-          db.goal.findMany({ where: { userId }, orderBy: { createdAt: "desc" } }),
-          db.habit.findMany({ where: { userId }, orderBy: { createdAt: "desc" } }),
-          db.habitLog.findMany({ where: { userId } }),
-          db.studySession.findMany({ where: { userId }, orderBy: { startedAt: "desc" } }),
-          db.focusSession.findMany({ where: { userId }, orderBy: { startedAt: "desc" } }),
-          db.achievement.findMany({ where: { userId }, orderBy: { unlockedAt: "desc" } }),
-          db.notification.findMany({ where: { userId }, orderBy: { createdAt: "desc" } }),
-          db.careerProfile.findUnique({ where: { userId } }),
-          db.aIConversation.findMany({ where: { userId }, orderBy: { updatedAt: "desc" }, take: 50 }),
-        ])
-
-      return NextResponse.json({
-        ok: true,
-        data: {
-          profile,
-          subjects,
-          assignments,
-          exams,
-          notes,
-          goals,
-          habits,
-          habitLogs,
-          studySessions,
-          focusSessions,
-          achievements,
-          notifications,
-          careerProfile,
-          aiConversations,
-        },
-      })
+      const snapshot = await fetchSnapshot(supabase, userId)
+      return NextResponse.json({ ok: true, data: toCamel(snapshot) })
     }
 
-    // Model-specific GET
-    const where: Prisma.WhereInput = { userId } as any
-    if (filter) {
-      const [k, v] = filter.split(":")
-      if (k === "subject") (where as any).subjectId = v
-      if (k === "conversation") (where as any).conversationId = v
-      if (k === "habit") (where as any).habitId = v
-    }
-
-    const result = await listByModel(model, where)
-    return NextResponse.json({ ok: true, data: result })
+    // Per-model filtered list.
+    const rows = await listByModel(supabase, model, userId, filter)
+    return NextResponse.json({ ok: true, data: toCamel(rows) })
   } catch (err) {
+    console.error("[data] GET error:", err)
     return NextResponse.json({ error: "Failed to load data." }, { status: 500 })
   }
 }
 
-async function listByModel(model: ModelKey, where: any) {
-  switch (model) {
-    case "subject": return db.subject.findMany({ where, include: { chapters: true }, orderBy: { createdAt: "asc" } })
-    case "chapter": return db.chapter.findMany({ where, orderBy: { createdAt: "asc" } })
-    case "assignment": return db.assignment.findMany({ where, include: { subject: true }, orderBy: { dueDate: "asc" } })
-    case "exam": return db.exam.findMany({ where, include: { subject: true }, orderBy: { examDate: "asc" } })
-    case "note": return db.note.findMany({ where, orderBy: { updatedAt: "desc" } })
-    case "goal": return db.goal.findMany({ where, orderBy: { createdAt: "desc" } })
-    case "habit": return db.habit.findMany({ where, orderBy: { createdAt: "desc" } })
-    case "habitLog": return db.habitLog.findMany({ where })
-    case "studySession": return db.studySession.findMany({ where, orderBy: { startedAt: "desc" } })
-    case "focusSession": return db.focusSession.findMany({ where, orderBy: { startedAt: "desc" } })
-    case "notification": return db.notification.findMany({ where, orderBy: { createdAt: "desc" } })
-    case "careerProfile": return db.careerProfile.findMany({ where })
-    case "aiConversation": return db.aIConversation.findMany({ where, orderBy: { updatedAt: "desc" }, include: { messages: true } })
-    case "aiMessage": return db.aIMessage.findMany({ where, orderBy: { createdAt: "asc" } })
-    case "achievement": return db.achievement.findMany({ where, orderBy: { unlockedAt: "desc" } })
-    case "profile": return db.profile.findMany({ where })
-    default: return []
-  }
-}
+// ─── POST handler (create/update/delete) ──────────────────────────────────────
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
+    const supabase = await createSupabaseServerClient()
+    const user = await getAuthUser(supabase)
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-    const userId = session.user.id
-    const body = await req.json()
-    const { model, action, id, data } = body as {
+    const userId = user.id
+
+    const body = (await req.json()) as {
       model: ModelKey
       action: "create" | "update" | "delete"
       id?: string
-      data: any
+      data?: Record<string, unknown>
+    }
+    const { model, action, id, data } = body
+
+    if (!model || !action) {
+      return NextResponse.json(
+        { error: "model and action are required." },
+        { status: 400 },
+      )
     }
 
-    // For create, enforce userId
     if (action === "create") {
-      const created = await createByModel(model, userId, data)
-      return NextResponse.json({ ok: true, data: created })
+      const created = await createByModel(supabase, model, userId, data ?? {})
+      return NextResponse.json({ ok: true, data: toCamel(created) })
     }
 
-    if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 })
-
-    // For update/delete, verify ownership first (RLS-style)
-    const owned = await assertOwnership(model, id, userId)
-    if (!owned) {
-      return NextResponse.json({ error: "Not found or access denied." }, { status: 404 })
+    if (!id) {
+      return NextResponse.json(
+        { error: "ID required for update/delete." },
+        { status: 400 },
+      )
     }
 
     if (action === "update") {
-      const updated = await updateByModel(model, id, data)
-      return NextResponse.json({ ok: true, data: updated })
+      const updated = await updateByModel(
+        supabase,
+        model,
+        id,
+        data ?? {},
+      )
+      if (!updated) {
+        return NextResponse.json(
+          { error: "Not found or access denied." },
+          { status: 404 },
+        )
+      }
+      return NextResponse.json({ ok: true, data: toCamel(updated) })
     }
+
     if (action === "delete") {
-      await deleteByModel(model, id)
+      const ok = await deleteByModel(supabase, model, id)
+      if (!ok) {
+        return NextResponse.json(
+          { error: "Not found or access denied." },
+          { status: 404 },
+        )
+      }
       return NextResponse.json({ ok: true })
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 })
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message || "Operation failed." }, { status: 500 })
-  }
-}
-
-async function createByModel(model: ModelKey, userId: string, data: any) {
-  switch (model) {
-    case "subject": return db.subject.create({ data: { ...data, userId } })
-    case "chapter": {
-      // Verify parent subject belongs to user
-      if (data.subjectId) {
-        const owner = await getSubjectOwner(data.subjectId)
-        if (owner !== userId) throw new Error("Not found or access denied.")
-      }
-      return db.chapter.create({ data })
-    }
-    case "assignment": return db.assignment.create({ data: { ...data, userId } })
-    case "exam": return db.exam.create({ data: { ...data, userId } })
-    case "note": return db.note.create({ data: { ...data, userId } })
-    case "goal": return db.goal.create({ data: { ...data, userId } })
-    case "habit": return db.habit.create({ data: { ...data, userId } })
-    case "habitLog": {
-      // Verify habit ownership
-      if (data.habitId) {
-        const owner = await getHabitOwner(data.habitId)
-        if (owner !== userId) throw new Error("Not found or access denied.")
-      }
-      // Prevent duplicate daily logs
-      const date = new Date(data.completedDate)
-      const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-      const existing = await db.habitLog.findUnique({
-        where: { habitId_completedDate: { habitId: data.habitId, completedDate: dayStart } },
-      })
-      if (existing) return existing
-      return db.habitLog.create({ data: { ...data, userId, completedDate: dayStart } })
-    }
-    case "studySession": return db.studySession.create({ data: { ...data, userId } })
-    case "focusSession": return db.focusSession.create({ data: { ...data, userId } })
-    case "notification": return db.notification.create({ data: { ...data, userId } })
-    case "careerProfile": return db.careerProfile.upsert({ where: { userId }, create: { ...data, userId }, update: data })
-    case "aiConversation": return db.aIConversation.create({ data: { ...data, userId } })
-    case "aiMessage": {
-      if (data.conversationId) {
-        const owner = await getConversationOwner(data.conversationId)
-        if (owner !== userId) throw new Error("Not found or access denied.")
-      }
-      return db.aIMessage.create({ data: { ...data, userId } })
-    }
-    case "profile": return db.profile.upsert({ where: { userId }, create: { ...data, userId }, update: data })
-    case "achievement": {
-      // Deduplicate by type
-      const existing = await db.achievement.findUnique({
-        where: { userId_achievementType: { userId, achievementType: data.achievementType } },
-      })
-      if (existing) return existing
-      return db.achievement.create({ data: { ...data, userId } })
-    }
-    default: throw new Error("Unknown model")
-  }
-}
-
-async function updateByModel(model: ModelKey, id: string, data: any) {
-  switch (model) {
-    case "subject": return db.subject.update({ where: { id }, data })
-    case "chapter": return db.chapter.update({ where: { id }, data })
-    case "assignment": return db.assignment.update({ where: { id }, data })
-    case "exam": return db.exam.update({ where: { id }, data })
-    case "note": return db.note.update({ where: { id }, data })
-    case "goal": return db.goal.update({ where: { id }, data })
-    case "habit": return db.habit.update({ where: { id }, data })
-    case "habitLog": return db.habitLog.update({ where: { id }, data })
-    case "studySession": return db.studySession.update({ where: { id }, data })
-    case "focusSession": return db.focusSession.update({ where: { id }, data })
-    case "notification": return db.notification.update({ where: { id }, data })
-    case "careerProfile": return db.careerProfile.update({ where: { id }, data })
-    case "aiConversation": return db.aIConversation.update({ where: { id }, data })
-    case "aiMessage": return db.aIMessage.update({ where: { id }, data })
-    case "profile": return db.profile.update({ where: { id }, data })
-    case "achievement": return db.achievement.update({ where: { id }, data })
-    default: throw new Error("Unknown model")
-  }
-}
-
-async function deleteByModel(model: ModelKey, id: string) {
-  switch (model) {
-    case "subject": return db.subject.delete({ where: { id } })
-    case "chapter": return db.chapter.delete({ where: { id } })
-    case "assignment": return db.assignment.delete({ where: { id } })
-    case "exam": return db.exam.delete({ where: { id } })
-    case "note": return db.note.delete({ where: { id } })
-    case "goal": return db.goal.delete({ where: { id } })
-    case "habit": return db.habit.delete({ where: { id } })
-    case "habitLog": return db.habitLog.delete({ where: { id } })
-    case "studySession": return db.studySession.delete({ where: { id } })
-    case "focusSession": return db.focusSession.delete({ where: { id } })
-    case "notification": return db.notification.delete({ where: { id } })
-    case "careerProfile": return db.careerProfile.delete({ where: { id } })
-    case "aiConversation": return db.aIConversation.delete({ where: { id } })
-    case "aiMessage": return db.aIMessage.delete({ where: { id } })
-    case "profile": return db.profile.delete({ where: { id } })
-    case "achievement": return db.achievement.delete({ where: { id } })
-    default: throw new Error("Unknown model")
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Operation failed."
+    // Surface ownership / not-found errors as 404, everything else as 500.
+    const isAccessError = /not found|access denied/i.test(message)
+    return NextResponse.json(
+      { error: isAccessError ? "Not found or access denied." : message },
+      { status: isAccessError ? 404 : 500 },
+    )
   }
 }

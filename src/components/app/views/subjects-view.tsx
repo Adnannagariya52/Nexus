@@ -28,7 +28,7 @@ import { BookOpen, Plus, Trash2, Clock, Calendar, ArrowRight, AlertCircle } from
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
-const COLORS = ["#5B8CFF", "#8B5CF6", "#22D3EE", "#22C55E", "#F59E0B", "#EF4444", "#EC4899"]
+const COLORS = ["#6C63FF", "#4238D6", "#6C63FF", "#B8FF6A", "#FFB020", "#E5484D", "#EC4899"]
 
 export function SubjectsView() {
   const navigate = useApp((s) => s.navigate)
@@ -128,7 +128,7 @@ export function SubjectsView() {
                       {inProgress} active
                     </div>
                     {nextExam && (
-                      <div className="flex items-center gap-1.5 text-[#F59E0B]">
+                      <div className="flex items-center gap-1.5 text-[#FFB020]">
                         <Calendar className="h-3 w-3" />
                         Exam soon
                       </div>

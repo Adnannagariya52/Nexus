@@ -31,7 +31,7 @@ import { Flame, Plus, Trash2, CheckCircle2, TrendingUp } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
-const COLORS = ["#5B8CFF", "#8B5CF6", "#22D3EE", "#22C55E", "#F59E0B", "#EF4444", "#EC4899"]
+const COLORS = ["#6C63FF", "#4238D6", "#6C63FF", "#B8FF6A", "#FFB020", "#E5484D", "#EC4899"]
 
 function calcStreak(habitId: string, logs: { habitId: string; completedDate: string }[]) {
   const habitLogs = logs.filter((l) => l.habitId === habitId)
@@ -194,7 +194,7 @@ export function HabitsView() {
                       onClick={() => {
                         if (confirm("Delete this habit?")) remove(h.id)
                       }}
-                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#EF4444]"
+                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#E5484D]"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -278,7 +278,7 @@ function HabitHeatmap({
               className={cn(
                 "aspect-square rounded-sm border",
                 done ? "" : "bg-muted/30 border-border",
-                isToday && "ring-1 ring-[#5B8CFF] ring-offset-1 ring-offset-background",
+                isToday && "ring-1 ring-[#6C63FF] ring-offset-1 ring-offset-background",
               )}
               style={
                 done

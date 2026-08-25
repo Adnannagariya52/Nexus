@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useSession } from "next-auth/react"
+import { useNexusAuth } from "@/components/providers/nexus-auth-provider"
 import { useApp } from "@/lib/store"
 import { NexusLogo } from "@/components/nexus/nexus-logo"
 import { Button } from "@/components/ui/button"
@@ -27,14 +27,14 @@ import { toast } from "sonner"
 const TOTAL_STEPS = 5
 
 export function OnboardingFlow() {
-  const { data: session } = useSession()
+  const { user } = useNexusAuth()
   const setView = useApp((s) => s.setView)
   const [step, setStep] = React.useState(0)
   const [direction, setDirection] = React.useState(1)
   const [submitting, setSubmitting] = React.useState(false)
 
   const [data, setData] = React.useState({
-    fullName: session?.user?.name || "",
+    fullName: user?.user_metadata?.full_name || "",
     grade: "",
     educationLevel: "high_school",
     stream: "",
@@ -85,12 +85,12 @@ export function OnboardingFlow() {
         <motion.div
           animate={{ x: [0, 50, 0], y: [0, -30, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-[#5B8CFF]/15 blur-[120px]"
+          className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-[#6C63FF]/15 blur-[120px]"
         />
         <motion.div
           animate={{ x: [0, -50, 0], y: [0, 30, 0] }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-[#8B5CF6]/15 blur-[120px]"
+          className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-[#4238D6]/15 blur-[120px]"
         />
       </div>
 
@@ -107,7 +107,7 @@ export function OnboardingFlow() {
         {step < TOTAL_STEPS && (
           <div className="mb-8 h-1 bg-white/[0.05] rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-[#5B8CFF] to-[#8B5CF6]"
+              className="h-full bg-gradient-to-r from-[#6C63FF] to-[#4238D6]"
               animate={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             />
@@ -127,7 +127,7 @@ export function OnboardingFlow() {
                   autoFocus
                   value={data.fullName}
                   onChange={(e) => setData({ ...data, fullName: e.target.value })}
-                  className="h-12 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+                  className="h-12 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
                   placeholder="Aarav Sharma"
                 />
               </div>
@@ -161,7 +161,7 @@ export function OnboardingFlow() {
                   <Input
                     value={data.grade}
                     onChange={(e) => setData({ ...data, grade: e.target.value })}
-                    className="h-11 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+                    className="h-11 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
                     placeholder="e.g. 12th, 2nd year"
                   />
                 </div>
@@ -193,7 +193,7 @@ export function OnboardingFlow() {
                 <Input
                   value={data.schoolName}
                   onChange={(e) => setData({ ...data, schoolName: e.target.value })}
-                  className="h-12 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#5B8CFF]/50 focus-visible:ring-[#5B8CFF]/20"
+                  className="h-12 bg-white/[0.03] border-white/[0.08] focus-visible:border-[#6C63FF]/50 focus-visible:ring-[#6C63FF]/20"
                   placeholder="e.g. Delhi Public School, IIT Bombay"
                 />
                 <p className="text-[10px] text-white/40">
@@ -222,7 +222,7 @@ export function OnboardingFlow() {
                     className={cn(
                       "text-left p-4 rounded-xl border transition-all",
                       data.academicGoal === o.v
-                        ? "border-[#5B8CFF] bg-[#5B8CFF]/[0.08]"
+                        ? "border-[#6C63FF] bg-[#6C63FF]/[0.08]"
                         : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/10",
                     )}
                   >
@@ -277,7 +277,7 @@ export function OnboardingFlow() {
             <Button
               onClick={next}
               disabled={submitting || (step === 0 && !data.fullName)}
-              className="bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] hover:shadow-[0_0_30px_-4px_rgba(91,140,255,0.5)] border-0"
+              className="bg-gradient-to-br from-[#6C63FF] to-[#4238D6] hover:shadow-[0_0_30px_-4px_rgba(91,140,255,0.5)] border-0"
             >
               {step === TOTAL_STEPS - 1
                 ? submitting ? "Setting up..." : "Enter NEXUS"
@@ -308,7 +308,7 @@ function StepCard({
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       className="glass-strong border border-white/[0.08] rounded-2xl p-6 sm:p-8 shadow-premium"
     >
-      <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#5B8CFF]/20 to-[#8B5CF6]/20 text-[#5B8CFF] mb-5">
+      <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#6C63FF]/20 to-[#4238D6]/20 text-[#6C63FF] mb-5">
         {icon}
       </div>
       {children}
@@ -345,7 +345,7 @@ function SelectButton({
         "rounded-xl border text-sm transition-all flex items-center justify-center gap-2",
         large ? "h-16" : "h-11",
         active
-          ? "border-[#5B8CFF] bg-[#5B8CFF]/[0.1] text-white"
+          ? "border-[#6C63FF] bg-[#6C63FF]/[0.1] text-white"
           : "border-white/[0.06] bg-white/[0.02] text-white/70 hover:bg-white/[0.04] hover:border-white/10",
       )}
     >
@@ -363,13 +363,13 @@ function CelebrationScreen({ onEnter }: { onEnter: () => void }) {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="glass-strong border border-white/[0.08] rounded-2xl p-8 sm:p-10 shadow-premium text-center relative overflow-hidden"
     >
-      <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-40 w-80 bg-[#5B8CFF]/20 blur-3xl" />
+      <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-40 w-80 bg-[#6C63FF]/20 blur-3xl" />
 
       <motion.div
         initial={{ scale: 0, rotate: -30 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ duration: 0.6, delay: 0.1, type: "spring" }}
-        className="relative inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] mb-6 shadow-glow"
+        className="relative inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#4238D6] mb-6 shadow-glow"
       >
         <CheckCircle2 className="h-8 w-8 text-white" />
       </motion.div>
@@ -406,7 +406,7 @@ function CelebrationScreen({ onEnter }: { onEnter: () => void }) {
             key={f.label}
             className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center"
           >
-            <f.icon className="h-4 w-4 mx-auto mb-1 text-[#5B8CFF]" />
+            <f.icon className="h-4 w-4 mx-auto mb-1 text-[#6C63FF]" />
             <div className="text-[10px] text-white/60">{f.label}</div>
           </div>
         ))}
@@ -420,7 +420,7 @@ function CelebrationScreen({ onEnter }: { onEnter: () => void }) {
       >
         <Button
           onClick={onEnter}
-          className="w-full h-12 bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] hover:shadow-[0_0_40px_-4px_rgba(91,140,255,0.6)] border-0"
+          className="w-full h-12 bg-gradient-to-br from-[#6C63FF] to-[#4238D6] hover:shadow-[0_0_40px_-4px_rgba(91,140,255,0.6)] border-0"
         >
           Enter NEXUS
           <ArrowRight className="h-4 w-4 ml-1.5" />

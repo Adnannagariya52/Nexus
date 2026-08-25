@@ -221,8 +221,8 @@ export function AssignmentsView() {
                     className={cn(
                       "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
                       a.status === "completed"
-                        ? "bg-[#22C55E] border-[#22C55E] text-white"
-                        : "border-border hover:border-[#22C55E]",
+                        ? "bg-[#B8FF6A] border-[#B8FF6A] text-white"
+                        : "border-border hover:border-[#B8FF6A]",
                     )}
                   >
                     {a.status === "completed" && <CheckCircle2 className="h-3.5 w-3.5" />}
@@ -246,7 +246,7 @@ export function AssignmentsView() {
                           <span
                             className={cn(
                               "text-[10px] flex items-center gap-0.5",
-                              overdue ? "text-[#EF4444]" : "text-muted-foreground",
+                              overdue ? "text-[#E5484D]" : "text-muted-foreground",
                             )}
                           >
                             <CalendarIcon className="h-3 w-3" />
@@ -272,7 +272,7 @@ export function AssignmentsView() {
                     onClick={() => {
                       if (confirm("Delete this assignment?")) remove(a.id)
                     }}
-                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#EF4444] transition-opacity"
+                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#E5484D] transition-opacity"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -299,8 +299,8 @@ export function AssignmentsView() {
                       className={cn(
                         "h-5 w-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
                         a.status === "completed"
-                          ? "bg-[#22C55E] border-[#22C55E] text-white"
-                          : "border-border hover:border-[#22C55E]",
+                          ? "bg-[#B8FF6A] border-[#B8FF6A] text-white"
+                          : "border-border hover:border-[#B8FF6A]",
                       )}
                     >
                       {a.status === "completed" && <CheckCircle2 className="h-3 w-3" />}
@@ -327,7 +327,7 @@ export function AssignmentsView() {
                   <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-3 border-t border-border">
                     <span>{a.subject?.name || "No subject"}</span>
                     {a.dueDate && (
-                      <span className={overdue ? "text-[#EF4444]" : ""}>
+                      <span className={overdue ? "text-[#E5484D]" : ""}>
                         {new Date(a.dueDate).toLocaleDateString()}
                       </span>
                     )}

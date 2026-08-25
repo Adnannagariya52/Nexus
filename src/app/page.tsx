@@ -1,33 +1,30 @@
 "use client"
 
 import * as React from "react"
-import { useSession } from "next-auth/react"
+import { useNexusAuth } from "@/components/providers/nexus-auth-provider"
 import { useApp } from "@/lib/store"
 import { LandingPage } from "@/components/landing/landing-page"
 import { AuthScreen } from "@/components/auth/auth-screen"
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow"
 import { AppShell } from "@/components/app/app-shell"
-import { CommandPalette } from "@/components/app/command-palette"
 import { ToastRegion } from "@/components/nexus/toast-region"
 import { FullScreenProgress } from "@/components/nexus/full-screen-progress"
 
 export default function Page() {
-  const { data: session, status } = useSession()
+  const { user, loading } = useNexusAuth()
   const view = useApp((s) => s.view)
   const setView = useApp((s) => s.setView)
-  const commandOpen = useApp((s) => s.commandOpen)
 
   // Sync view with auth state
   React.useEffect(() => {
-    if (status === "loading") return
-    if (session?.user) {
+    if (loading) return
+    if (user) {
       // If on a marketing/auth view, transition to app
       if (view === "landing" || view === "login" || view === "signup" || view === "forgot") {
-        // Onboarding handled inside app shell
         setView("app")
       }
     }
-  }, [session, status, view, setView])
+  }, [user, loading, view, setView])
 
   // Route param sync (for ?view=login deep links)
   React.useEffect(() => {
@@ -37,13 +34,12 @@ export default function Page() {
     if (v && ["landing", "login", "signup", "forgot", "reset", "onboarding", "app"].includes(v)) {
       setView(v)
     }
-     
   }, [])
 
   return (
     <>
       <ToastRegion />
-      {status === "loading" && view !== "landing" && <FullScreenProgress />}
+      {loading && view !== "landing" && <FullScreenProgress />}
       <React.Suspense fallback={<FullScreenProgress />}>
         {view === "landing" && <LandingPage />}
         {(view === "login" || view === "signup" || view === "forgot" || view === "reset") && (
@@ -51,7 +47,6 @@ export default function Page() {
         )}
         {view === "onboarding" && <OnboardingFlow />}
         {view === "app" && <AppShell />}
-        {commandOpen && <CommandPalette />}
       </React.Suspense>
     </>
   )

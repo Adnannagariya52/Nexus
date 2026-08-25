@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useSession } from "next-auth/react"
+import { useNexusAuth } from "@/components/providers/nexus-auth-provider"
 import { useApp } from "@/lib/store"
 import { useData, updateResource } from "@/lib/data-client"
 import {
@@ -24,7 +24,7 @@ import { User, Mail, GraduationCap, School, Target, Clock, Save, Camera, Edit2 }
 import { toast } from "sonner"
 
 export function ProfileView() {
-  const { data: session } = useSession()
+  const { user } = useNexusAuth()
   const navigate = useApp((s) => s.navigate)
   const { snapshot, mutate, refresh } = useData()
   const profile = snapshot?.profile
@@ -100,12 +100,12 @@ export function ProfileView() {
 
       {/* Profile card */}
       <NexusCard className="p-6 relative overflow-hidden">
-        <div className="absolute -top-20 -right-20 h-48 w-48 bg-[#5B8CFF]/15 blur-3xl" />
+        <div className="absolute -top-20 -right-20 h-48 w-48 bg-[#6C63FF]/15 blur-3xl" />
         <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
           <div className="relative">
             <Avatar className="h-20 w-20 border-2 border-border">
               <AvatarImage src={avatarUrl || undefined} />
-              <AvatarFallback className="text-xl font-semibold bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] text-white">
+              <AvatarFallback className="text-xl font-semibold bg-gradient-to-br from-[#6C63FF] to-[#4238D6] text-white">
                 {initials}
               </AvatarFallback>
             </Avatar>
@@ -124,7 +124,7 @@ export function ProfileView() {
           </div>
           <div className="flex-1">
             <h2 className="text-xl font-semibold">{fullName || "Student"}</h2>
-            <p className="text-sm text-muted-foreground">{session?.user?.email}</p>
+            <p className="text-sm text-muted-foreground">{user?.email}</p>
             <div className="flex flex-wrap items-center gap-2 mt-2">
               {grade && <NexusBadge color="blue">{grade}</NexusBadge>}
               {stream && <NexusBadge color="violet">{stream}</NexusBadge>}
@@ -148,7 +148,7 @@ export function ProfileView() {
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs">Email</Label>
-            <Input value={session?.user?.email || ""} disabled className="bg-muted/30" />
+            <Input value={user?.email || ""} disabled className="bg-muted/30" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs">Education level</Label>

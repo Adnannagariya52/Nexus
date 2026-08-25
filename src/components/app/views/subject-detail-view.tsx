@@ -234,9 +234,9 @@ export function SubjectDetailView() {
                     className={cn(
                       "h-7 w-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
                       c.status === "completed"
-                        ? "bg-[#22C55E] border-[#22C55E] text-white"
+                        ? "bg-[#B8FF6A] border-[#B8FF6A] text-white"
                         : c.status === "in_progress"
-                          ? "border-[#5B8CFF] text-[#5B8CFF]"
+                          ? "border-[#6C63FF] text-[#6C63FF]"
                           : "border-border text-transparent",
                     )}
                   >
@@ -275,7 +275,7 @@ export function SubjectDetailView() {
                     onClick={() => {
                       if (confirm(`Delete chapter "${c.title}"?`)) deleteChapter(c.id)
                     }}
-                    className="text-muted-foreground hover:text-[#EF4444] opacity-0 group-hover:opacity-100"
+                    className="text-muted-foreground hover:text-[#E5484D] opacity-0 group-hover:opacity-100"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -295,7 +295,7 @@ export function SubjectDetailView() {
             </h3>
             <button
               onClick={() => navigate("assignments")}
-              className="text-xs text-[#5B8CFF] hover:underline"
+              className="text-xs text-[#6C63FF] hover:underline"
             >
               View all
             </button>
@@ -311,7 +311,7 @@ export function SubjectDetailView() {
                   <CheckCircle2
                     className={cn(
                       "h-4 w-4",
-                      a.status === "completed" ? "text-[#22C55E]" : "text-muted-foreground",
+                      a.status === "completed" ? "text-[#B8FF6A]" : "text-muted-foreground",
                     )}
                   />
                   <span className={cn("flex-1 truncate", a.status === "completed" && "line-through text-muted-foreground")}>
@@ -335,7 +335,7 @@ export function SubjectDetailView() {
             </h3>
             <button
               onClick={() => navigate("notes")}
-              className="text-xs text-[#5B8CFF] hover:underline"
+              className="text-xs text-[#6C63FF] hover:underline"
             >
               View all
             </button>

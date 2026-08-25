@@ -153,10 +153,10 @@ export function NotesView() {
                     className="h-7 w-7 rounded-lg flex items-center justify-center"
                     style={{
                       backgroundColor: n.subjectId
-                        ? `${subjects.find((s) => s.id === n.subjectId)?.color || "#5B8CFF"}15`
+                        ? `${subjects.find((s) => s.id === n.subjectId)?.color || "#6C63FF"}15`
                         : "rgba(148,163,184,0.1)",
                       color: n.subjectId
-                        ? subjects.find((s) => s.id === n.subjectId)?.color || "#5B8CFF"
+                        ? subjects.find((s) => s.id === n.subjectId)?.color || "#6C63FF"
                         : "#94A3B8",
                     }}
                   >
@@ -331,7 +331,7 @@ function NoteEditor({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-[#EF4444]"
+              className="h-8 w-8 text-muted-foreground hover:text-[#E5484D]"
               onClick={() => {
                 if (confirm("Delete this note?")) onDelete(note.id)
               }}

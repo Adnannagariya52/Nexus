@@ -27,13 +27,13 @@ export function MobileTabBar() {
             onClick={() => navigate(tab.route)}
             className={cn(
               "flex-1 flex flex-col items-center justify-center gap-1 transition-colors",
-              active ? "text-[#5B8CFF]" : "text-muted-foreground",
+              active ? "text-[#6C63FF]" : "text-muted-foreground",
             )}
           >
             <tab.icon className="h-5 w-5" />
             <span className="text-[10px] font-medium">{tab.label}</span>
             {active && (
-              <span className="absolute top-0 h-0.5 w-8 rounded-full bg-[#5B8CFF]" />
+              <span className="absolute top-0 h-0.5 w-8 rounded-full bg-[#6C63FF]" />
             )}
           </button>
         )

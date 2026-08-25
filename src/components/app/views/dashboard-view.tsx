@@ -193,28 +193,28 @@ export function DashboardView() {
           label="Focus Score"
           value={`${focusScore}%`}
           sub={`Target: ${target}m`}
-          color="#5B8CFF"
+          color="#6C63FF"
           icon={<Zap className="h-4 w-4" />}
         />
         <NexusStatCard
           label="Streak"
           value={`${streak}d`}
           sub={streak > 0 ? "Keep it going!" : "Start today"}
-          color="#F59E0B"
+          color="#FFB020"
           icon={<Flame className="h-4 w-4" />}
         />
         <NexusStatCard
           label="Today"
           value={`${Math.floor(todaysStudyMin / 60)}h ${todaysStudyMin % 60}m`}
           sub="Focused"
-          color="#22C55E"
+          color="#B8FF6A"
           icon={<Timer className="h-4 w-4" />}
         />
         <NexusStatCard
           label="Week"
           value={`${Math.floor(weekMin / 60)}h ${weekMin % 60}m`}
           sub="Last 7 days"
-          color="#8B5CF6"
+          color="#4238D6"
           icon={<TrendingUp className="h-4 w-4" />}
         />
       </div>
@@ -223,11 +223,11 @@ export function DashboardView() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Today's mission - dominant */}
         <NexusCard className="lg:col-span-2 p-6 relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 h-32 w-32 bg-[#5B8CFF]/10 blur-3xl" />
+          <div className="absolute -top-12 -right-12 h-32 w-32 bg-[#6C63FF]/10 blur-3xl" />
           <div className="relative">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[#5B8CFF]" />
+                <Sparkles className="h-4 w-4 text-[#6C63FF]" />
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                   Today's Mission
                 </h3>
@@ -239,7 +239,7 @@ export function DashboardView() {
               {/* Urgent assignment */}
               <button
                 onClick={() => navigate("assignments")}
-                className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#5B8CFF]/30 transition-colors"
+                className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#6C63FF]/30 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
                   <NexusBadge color={urgentAssignment ? (urgentAssignment.priority as any) || "amber" : "muted"}>
@@ -260,7 +260,7 @@ export function DashboardView() {
               {/* Next exam */}
               <button
                 onClick={() => navigate("exams")}
-                className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#F59E0B]/30 transition-colors"
+                className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#FFB020]/30 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
                   <NexusBadge color={nextExam ? "amber" : "muted"}>
@@ -281,7 +281,7 @@ export function DashboardView() {
               {/* Weakest subject */}
               <button
                 onClick={() => navigate("subjects")}
-                className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#8B5CF6]/30 transition-colors"
+                className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#4238D6]/30 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
                   <NexusBadge color="violet">Focus area</NexusBadge>
@@ -300,11 +300,11 @@ export function DashboardView() {
               {/* Recommended focus session */}
               <button
                 onClick={() => navigate("focus")}
-                className="text-left rounded-xl border border-border bg-gradient-to-br from-[#5B8CFF]/[0.08] to-[#8B5CF6]/[0.05] p-4 hover:border-[#5B8CFF]/40 transition-colors"
+                className="text-left rounded-xl border border-border bg-gradient-to-br from-[#6C63FF]/[0.08] to-[#4238D6]/[0.05] p-4 hover:border-[#6C63FF]/40 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
                   <NexusBadge color="cyan">Recommended</NexusBadge>
-                  <PlayCircle className="h-4 w-4 text-[#5B8CFF]" />
+                  <PlayCircle className="h-4 w-4 text-[#6C63FF]" />
                 </div>
                 <div className="text-sm font-medium">25 min focus session</div>
                 <div className="text-xs text-muted-foreground mt-1">
@@ -334,7 +334,7 @@ export function DashboardView() {
                     className={cn(
                       "w-full rounded-t-md",
                       i === 6
-                        ? "bg-gradient-to-t from-[#5B8CFF] to-[#8B5CF6]"
+                        ? "bg-gradient-to-t from-[#6C63FF] to-[#4238D6]"
                         : "bg-white/10",
                     )}
                     style={{ minHeight: "4px" }}
@@ -362,7 +362,7 @@ export function DashboardView() {
             </h3>
             <button
               onClick={() => navigate("assignments")}
-              className="text-xs text-[#5B8CFF] hover:underline flex items-center gap-1"
+              className="text-xs text-[#6C63FF] hover:underline flex items-center gap-1"
             >
               View all
               <ArrowRight className="h-3 w-3" />
@@ -391,10 +391,10 @@ export function DashboardView() {
                   >
                     <button
                       onClick={() => completeAssignment(a.id)}
-                      className="h-5 w-5 rounded-full border-2 border-border hover:border-[#22C55E] flex items-center justify-center transition-colors"
+                      className="h-5 w-5 rounded-full border-2 border-border hover:border-[#B8FF6A] flex items-center justify-center transition-colors"
                       aria-label="Mark complete"
                     >
-                      <CheckCircle2 className="h-3 w-3 opacity-0 hover:opacity-100 text-[#22C55E]" />
+                      <CheckCircle2 className="h-3 w-3 opacity-0 hover:opacity-100 text-[#B8FF6A]" />
                     </button>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium truncate">{a.title}</div>
@@ -419,7 +419,7 @@ export function DashboardView() {
             </h3>
             <button
               onClick={() => navigate("exams")}
-              className="text-xs text-[#5B8CFF] hover:underline flex items-center gap-1"
+              className="text-xs text-[#6C63FF] hover:underline flex items-center gap-1"
             >
               View all
               <ArrowRight className="h-3 w-3" />
@@ -445,7 +445,7 @@ export function DashboardView() {
                     key={e.id}
                     className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
                   >
-                    <div className="h-10 w-10 rounded-lg bg-[#F59E0B]/10 flex items-center justify-center text-[#F59E0B]">
+                    <div className="h-10 w-10 rounded-lg bg-[#FFB020]/10 flex items-center justify-center text-[#FFB020]">
                       <CalendarClock className="h-4 w-4" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -483,7 +483,7 @@ export function DashboardView() {
             </h3>
             <button
               onClick={() => navigate("subjects")}
-              className="text-xs text-[#5B8CFF] hover:underline flex items-center gap-1"
+              className="text-xs text-[#6C63FF] hover:underline flex items-center gap-1"
             >
               View all
               <ArrowRight className="h-3 w-3" />
@@ -506,7 +506,7 @@ export function DashboardView() {
                   <button
                     key={s.id}
                     onClick={() => navigate("subject_detail", { subjectId: s.id })}
-                    className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#5B8CFF]/30 transition-colors"
+                    className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#6C63FF]/30 transition-colors"
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <div
@@ -543,7 +543,7 @@ export function DashboardView() {
               </h3>
               <button
                 onClick={() => navigate("goals")}
-                className="text-xs text-[#5B8CFF] hover:underline"
+                className="text-xs text-[#6C63FF] hover:underline"
               >
                 View
               </button>
@@ -563,7 +563,7 @@ export function DashboardView() {
                     </div>
                     <NexusProgressBar
                       progress={g.progress}
-                      color={g.status === "at_risk" ? "#F59E0B" : "#22C55E"}
+                      color={g.status === "at_risk" ? "#FFB020" : "#B8FF6A"}
                     />
                   </div>
                 ))}
@@ -578,7 +578,7 @@ export function DashboardView() {
               </h3>
               <button
                 onClick={() => navigate("habits")}
-                className="text-xs text-[#5B8CFF] hover:underline"
+                className="text-xs text-[#6C63FF] hover:underline"
               >
                 View
               </button>
@@ -596,7 +596,7 @@ export function DashboardView() {
                     {todayHabitLogs.length}/{habits.length} today
                   </span>
                 </div>
-                <NexusProgressBar progress={habitCompletionRate} color="#22D3EE" />
+                <NexusProgressBar progress={habitCompletionRate} color="#6C63FF" />
               </div>
             )}
           </NexusCard>
@@ -610,9 +610,9 @@ export function DashboardView() {
           onClick={() => navigate("ai-tutor")}
           className="p-6 relative overflow-hidden cursor-pointer"
         >
-          <div className="absolute -top-10 -right-10 h-32 w-32 bg-[#8B5CF6]/15 blur-3xl" />
+          <div className="absolute -top-10 -right-10 h-32 w-32 bg-[#4238D6]/15 blur-3xl" />
           <div className="relative flex items-center gap-5">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] flex items-center justify-center shadow-glow">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#4238D6] flex items-center justify-center shadow-glow">
               <Brain className="h-7 w-7 text-white" />
             </div>
             <div className="flex-1">
@@ -632,7 +632,7 @@ export function DashboardView() {
             </h3>
             <button
               onClick={() => navigate("achievements")}
-              className="text-xs text-[#5B8CFF] hover:underline"
+              className="text-xs text-[#6C63FF] hover:underline"
             >
               View all
             </button>
@@ -651,7 +651,7 @@ export function DashboardView() {
                   key={a.id}
                   className="rounded-xl border border-border bg-card p-3 text-center"
                 >
-                  <div className="h-8 w-8 rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6] mx-auto mb-1.5 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-full bg-[#4238D6]/15 text-[#4238D6] mx-auto mb-1.5 flex items-center justify-center">
                     <Award className="h-4 w-4" />
                   </div>
                   <div className="text-[10px] font-medium truncate">{a.title}</div>

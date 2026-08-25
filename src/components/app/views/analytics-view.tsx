@@ -25,7 +25,7 @@ import {
 } from "recharts"
 import { TrendingUp, Clock, Target, Flame, CheckCircle2, BarChart3 } from "lucide-react"
 
-const COLORS = ["#5B8CFF", "#8B5CF6", "#22D3EE", "#22C55E", "#F59E0B", "#EC4899"]
+const COLORS = ["#6C63FF", "#4238D6", "#6C63FF", "#B8FF6A", "#FFB020", "#EC4899"]
 
 export function AnalyticsView() {
   const { snapshot } = useData()
@@ -137,28 +137,28 @@ export function AnalyticsView() {
           label="Total study"
           value={`${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`}
           sub="All time"
-          color="#5B8CFF"
+          color="#6C63FF"
           icon={<Clock className="h-4 w-4" />}
         />
         <NexusStatCard
           label="Focus sessions"
           value={focusSessions.filter((f) => f.status === "completed").length}
           sub="Completed"
-          color="#8B5CF6"
+          color="#4238D6"
           icon={<Target className="h-4 w-4" />}
         />
         <NexusStatCard
           label="Task completion"
           value={`${completionRate}%`}
           sub={`${completedTasks}/${assignments.length}`}
-          color="#22C55E"
+          color="#B8FF6A"
           icon={<CheckCircle2 className="h-4 w-4" />}
         />
         <NexusStatCard
           label="Goals on track"
           value={`${goalsOnTrack}/${goals.length}`}
           sub="Active"
-          color="#F59E0B"
+          color="#FFB020"
           icon={<TrendingUp className="h-4 w-4" />}
         />
       </div>
@@ -182,8 +182,8 @@ export function AnalyticsView() {
             <AreaChart data={weeklyData}>
               <defs>
                 <linearGradient id="grad-min" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5B8CFF" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#5B8CFF" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#6C63FF" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#6C63FF" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -201,7 +201,7 @@ export function AnalyticsView() {
               <Area
                 type="monotone"
                 dataKey="minutes"
-                stroke="#5B8CFF"
+                stroke="#6C63FF"
                 strokeWidth={2}
                 fill="url(#grad-min)"
                 animationDuration={1000}
@@ -298,7 +298,7 @@ export function AnalyticsView() {
                   />
                   <Bar
                     dataKey="rate"
-                    fill="#22D3EE"
+                    fill="#6C63FF"
                     radius={[4, 4, 0, 0]}
                     animationDuration={1000}
                   />
@@ -345,11 +345,11 @@ export function AnalyticsView() {
             </div>
             <div>
               <div className="text-xs text-muted-foreground mb-1">Completed</div>
-              <div className="text-2xl font-semibold text-[#22C55E]">{completedTasks}</div>
+              <div className="text-2xl font-semibold text-[#B8FF6A]">{completedTasks}</div>
             </div>
             <div>
               <div className="text-xs text-muted-foreground mb-1">Pending</div>
-              <div className="text-2xl font-semibold text-[#F59E0B]">
+              <div className="text-2xl font-semibold text-[#FFB020]">
                 {assignments.filter((a) => a.status === "pending").length}
               </div>
             </div>

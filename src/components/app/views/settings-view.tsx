@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { signOut } from "next-auth/react"
-import { useSession } from "next-auth/react"
+import { useNexusAuth } from "@/components/providers/nexus-auth-provider"
 import { useTheme } from "next-themes"
 import { useData } from "@/lib/data-client"
 import {
@@ -42,7 +41,7 @@ type Section = "account" | "appearance" | "notifications" | "study" | "security"
 
 export function SettingsView() {
   const [section, setSection] = React.useState<Section>("account")
-  const { data: session } = useSession()
+  const { user, signOut } = useNexusAuth()
   const { theme, setTheme } = useTheme()
 
   const sections: { key: Section; label: string; icon: any }[] = [
@@ -88,7 +87,7 @@ export function SettingsView() {
           )}
           {section === "notifications" && <NotificationsSection />}
           {section === "study" && <StudySection />}
-          {section === "security" && <SecuritySection email={session?.user?.email} />}
+          {section === "security" && <SecuritySection email={user?.email} />}
         </div>
       </div>
     </div>
@@ -96,7 +95,7 @@ export function SettingsView() {
 }
 
 function AccountSection() {
-  const { data: session } = useSession()
+  const { user, signOut } = useNexusAuth()
   return (
     <NexusCard className="p-6">
       <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-4">
@@ -105,7 +104,7 @@ function AccountSection() {
       <div className="space-y-4">
         <div>
           <Label className="text-xs">Email</Label>
-          <Input value={session?.user?.email || ""} disabled className="mt-1.5 bg-muted/30" />
+          <Input value={user?.email || ""} disabled className="mt-1.5 bg-muted/30" />
           <p className="text-[10px] text-muted-foreground mt-1">
             Email cannot be changed in this version.
           </p>
@@ -134,13 +133,13 @@ function AppearanceSection({
             className={cn(
               "rounded-xl border p-4 text-left transition-all",
               theme === "dark"
-                ? "border-[#5B8CFF] bg-[#5B8CFF]/[0.05]"
+                ? "border-[#6C63FF] bg-[#6C63FF]/[0.05]"
                 : "border-border bg-card hover:bg-accent",
             )}
           >
             <div className="flex items-center justify-between mb-3">
-              <Moon className="h-4 w-4 text-[#5B8CFF]" />
-              {theme === "dark" && <span className="text-[10px] text-[#5B8CFF]">Active</span>}
+              <Moon className="h-4 w-4 text-[#6C63FF]" />
+              {theme === "dark" && <span className="text-[10px] text-[#6C63FF]">Active</span>}
             </div>
             <div className="text-sm font-semibold">Dark</div>
             <div className="text-[10px] text-muted-foreground mt-0.5">
@@ -153,13 +152,13 @@ function AppearanceSection({
             className={cn(
               "rounded-xl border p-4 text-left transition-all",
               theme === "light"
-                ? "border-[#5B8CFF] bg-[#5B8CFF]/[0.05]"
+                ? "border-[#6C63FF] bg-[#6C63FF]/[0.05]"
                 : "border-border bg-card hover:bg-accent",
             )}
           >
             <div className="flex items-center justify-between mb-3">
-              <Sun className="h-4 w-4 text-[#F59E0B]" />
-              {theme === "light" && <span className="text-[10px] text-[#5B8CFF]">Active</span>}
+              <Sun className="h-4 w-4 text-[#FFB020]" />
+              {theme === "light" && <span className="text-[10px] text-[#6C63FF]">Active</span>}
             </div>
             <div className="text-sm font-semibold">Light</div>
             <div className="text-[10px] text-muted-foreground mt-0.5">
@@ -226,7 +225,7 @@ function StudySection() {
       </h3>
       <p className="text-xs text-muted-foreground">
         Study preferences are part of your profile. Edit them in{" "}
-        <a href="#" onClick={() => useApp.getState().navigate("profile")} className="text-[#5B8CFF] hover:underline">
+        <a href="#" onClick={() => useApp.getState().navigate("profile")} className="text-[#6C63FF] hover:underline">
           Profile
         </a>
         .
@@ -242,7 +241,7 @@ function SecuritySection({ email }: { email?: string | null }) {
   async function deleteAccount() {
     // In production, this would call an API endpoint
     // For demo: sign out and explain
-    await signOut({ callbackUrl: "/" })
+    await signOut()
     toast.success("Account deletion requested. (Demo mode — your data persists in the database.)")
   }
 
@@ -274,7 +273,7 @@ function SecuritySection({ email }: { email?: string | null }) {
             <NexusButton
               variant="outline"
               size="sm"
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => signOut()}
               className="gap-1.5"
             >
               <LogOut className="h-3.5 w-3.5" />
@@ -284,8 +283,8 @@ function SecuritySection({ email }: { email?: string | null }) {
         </div>
       </NexusCard>
 
-      <NexusCard className="p-6 border-[#EF4444]/20">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-[#EF4444] mb-4 flex items-center gap-2">
+      <NexusCard className="p-6 border-[#E5484D]/20">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-[#E5484D] mb-4 flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
           Danger zone
         </h3>
@@ -300,7 +299,7 @@ function SecuritySection({ email }: { email?: string | null }) {
             variant="outline"
             size="sm"
             onClick={() => setConfirmDelete(true)}
-            className="text-[#EF4444] border-[#EF4444]/30 hover:bg-[#EF4444]/10"
+            className="text-[#E5484D] border-[#E5484D]/30 hover:bg-[#E5484D]/10"
           >
             <Trash2 className="h-3.5 w-3.5 mr-1.5" />
             Delete
@@ -314,7 +313,7 @@ function SecuritySection({ email }: { email?: string | null }) {
             <DialogTitle>Delete account permanently?</DialogTitle>
           </DialogHeader>
           <div className="py-2 space-y-3">
-            <div className="flex items-start gap-2 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/20 p-3 text-xs text-[#EF4444]">
+            <div className="flex items-start gap-2 rounded-lg bg-[#E5484D]/10 border border-[#E5484D]/20 p-3 text-xs text-[#E5484D]">
               <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
               <div>
                 This will permanently delete your account and all associated data including
@@ -340,7 +339,7 @@ function SecuritySection({ email }: { email?: string | null }) {
             <NexusButton
               disabled={confirmText !== "DELETE"}
               onClick={deleteAccount}
-              className="bg-[#EF4444] hover:bg-[#EF4444]/80"
+              className="bg-[#E5484D] hover:bg-[#E5484D]/80"
             >
               Delete account forever
             </NexusButton>

@@ -223,7 +223,7 @@ export function AITutorView() {
         <NexusCard className="hidden lg:flex flex-col p-3 overflow-hidden">
           <div className="flex items-center justify-between mb-3 px-1">
             <div className="flex items-center gap-2">
-              <Brain className="h-4 w-4 text-[#8B5CF6]" />
+              <Brain className="h-4 w-4 text-[#4238D6]" />
               <span className="text-sm font-semibold">Conversations</span>
             </div>
             <button
@@ -278,7 +278,7 @@ export function AITutorView() {
                         e.stopPropagation()
                         if (confirm("Delete this conversation?")) deleteConversation(c.id)
                       }}
-                      className="h-6 w-6 flex items-center justify-center rounded hover:bg-background text-muted-foreground hover:text-[#EF4444]"
+                      className="h-6 w-6 flex items-center justify-center rounded hover:bg-background text-muted-foreground hover:text-[#E5484D]"
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>
@@ -294,7 +294,7 @@ export function AITutorView() {
           {/* Header */}
           <div className="h-14 px-4 flex items-center justify-between border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] flex items-center justify-center shadow-glow">
+              <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-[#6C63FF] to-[#4238D6] flex items-center justify-center shadow-glow">
                 <Brain className="h-4 w-4 text-white" />
               </div>
               <div>
@@ -328,7 +328,7 @@ export function AITutorView() {
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
             {messages.length === 0 && !loading ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] flex items-center justify-center mb-5 shadow-glow">
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#4238D6] flex items-center justify-center mb-5 shadow-glow">
                   <Brain className="h-8 w-8 text-white" />
                 </div>
                 <h2 className="text-lg font-semibold">Ask your first question</h2>
@@ -365,7 +365,7 @@ export function AITutorView() {
                     )}
                   >
                     {m.role === "assistant" && (
-                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] flex items-center justify-center shrink-0">
+                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#6C63FF] to-[#4238D6] flex items-center justify-center shrink-0">
                         <Brain className="h-4 w-4 text-white" />
                       </div>
                     )}
@@ -378,12 +378,12 @@ export function AITutorView() {
                         className={cn(
                           "rounded-2xl px-4 py-2.5 text-sm",
                           m.role === "user"
-                            ? "bg-[#5B8CFF]/[0.15] border border-[#5B8CFF]/30 text-foreground rounded-tr-md"
+                            ? "bg-[#6C63FF]/[0.15] border border-[#6C63FF]/30 text-foreground rounded-tr-md"
                             : "bg-card border border-border text-foreground rounded-tl-md",
                         )}
                       >
                         {m.role === "assistant" ? (
-                          <div className="prose prose-sm prose-invert max-w-none [&>*]:first:mt-0 [&>*]:last:mb-0 [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_pre]:bg-background/50 [&_pre]:border [&_pre]:border-border [&_code]:text-[#5B8CFF] [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-sm [&_h3]:font-semibold [&_strong]:text-foreground">
+                          <div className="prose prose-sm prose-invert max-w-none [&>*]:first:mt-0 [&>*]:last:mb-0 [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_pre]:bg-background/50 [&_pre]:border [&_pre]:border-border [&_code]:text-[#6C63FF] [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-sm [&_h3]:font-semibold [&_strong]:text-foreground">
                             <ReactMarkdown>{m.content}</ReactMarkdown>
                           </div>
                         ) : (
@@ -411,17 +411,17 @@ export function AITutorView() {
                 ))}
                 {loading && (
                   <div className="flex gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] flex items-center justify-center shrink-0">
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#6C63FF] to-[#4238D6] flex items-center justify-center shrink-0">
                       <Brain className="h-4 w-4 text-white" />
                     </div>
                     <div className="rounded-2xl rounded-tl-md bg-card border border-border px-4 py-3 flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#5B8CFF] animate-bounce" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] animate-bounce" />
                       <span
-                        className="h-1.5 w-1.5 rounded-full bg-[#5B8CFF] animate-bounce"
+                        className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] animate-bounce"
                         style={{ animationDelay: "0.15s" }}
                       />
                       <span
-                        className="h-1.5 w-1.5 rounded-full bg-[#5B8CFF] animate-bounce"
+                        className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] animate-bounce"
                         style={{ animationDelay: "0.3s" }}
                       />
                     </div>
@@ -444,7 +444,7 @@ export function AITutorView() {
                   className={cn(
                     "shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-full text-[10px] font-medium border transition-all",
                     quickAction === q.id
-                      ? "bg-[#5B8CFF]/15 border-[#5B8CFF]/40 text-[#5B8CFF]"
+                      ? "bg-[#6C63FF]/15 border-[#6C63FF]/40 text-[#6C63FF]"
                       : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-accent",
                   )}
                 >
@@ -482,7 +482,7 @@ export function AITutorView() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything about your studies..."
-              className="flex-1 h-10 px-4 bg-background border border-border rounded-lg text-sm outline-none focus:border-[#5B8CFF]/50"
+              className="flex-1 h-10 px-4 bg-background border border-border rounded-lg text-sm outline-none focus:border-[#6C63FF]/50"
             />
             <NexusButton type="submit" size="icon" className="h-10 w-10" disabled={!input.trim() || loading}>
               <Send className="h-4 w-4" />

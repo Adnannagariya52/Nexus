@@ -28,7 +28,7 @@ const ALL_ACHIEVEMENTS = [
     title: "First Focus Session",
     description: "Complete your first focus session",
     icon: Zap,
-    color: "#5B8CFF",
+    color: "#6C63FF",
     check: (s: any) => s.focusSessions.length > 0,
   },
   {
@@ -36,7 +36,7 @@ const ALL_ACHIEVEMENTS = [
     title: "7 Day Streak",
     description: "Study for 7 consecutive days",
     icon: Flame,
-    color: "#F59E0B",
+    color: "#FFB020",
     check: (s: any) => {
       const days = new Set(s.focusSessions.map((f: any) => new Date(f.startedAt).toDateString()))
       let streak = 0
@@ -53,7 +53,7 @@ const ALL_ACHIEVEMENTS = [
     title: "50 Study Hours",
     description: "Accumulate 50 hours of study",
     icon: Clock,
-    color: "#22C55E",
+    color: "#B8FF6A",
     check: (s: any) =>
       [...s.focusSessions, ...s.studySessions].reduce(
         (sum: number, x: any) => sum + x.durationMinutes,
@@ -65,7 +65,7 @@ const ALL_ACHIEVEMENTS = [
     title: "Assignment Master",
     description: "Complete 25 assignments",
     icon: CheckCircle2,
-    color: "#8B5CF6",
+    color: "#4238D6",
     check: (s: any) => s.assignments.filter((a: any) => a.status === "completed").length >= 25,
   },
   {
@@ -73,7 +73,7 @@ const ALL_ACHIEVEMENTS = [
     title: "Early Starter",
     description: "Start a focus session before 8am",
     icon: Star,
-    color: "#22D3EE",
+    color: "#6C63FF",
     check: (s: any) =>
       s.focusSessions.some((f: any) => new Date(f.startedAt).getHours() < 8),
   },
@@ -90,7 +90,7 @@ const ALL_ACHIEVEMENTS = [
     title: "AI Explorer",
     description: "Have 10 conversations with the AI tutor",
     icon: Brain,
-    color: "#5B8CFF",
+    color: "#6C63FF",
     check: (s: any) => s.aiConversations.length >= 10,
   },
   {
@@ -98,7 +98,7 @@ const ALL_ACHIEVEMENTS = [
     title: "Subject Scholar",
     description: "Create 5 subjects",
     icon: Trophy,
-    color: "#F59E0B",
+    color: "#FFB020",
     check: (s: any) => s.subjects.length >= 5,
   },
 ]
@@ -118,9 +118,9 @@ export function AchievementsView() {
 
       {/* Summary */}
       <NexusCard className="p-6 relative overflow-hidden">
-        <div className="absolute -top-20 -right-20 h-48 w-48 bg-[#8B5CF6]/15 blur-3xl" />
+        <div className="absolute -top-20 -right-20 h-48 w-48 bg-[#4238D6]/15 blur-3xl" />
         <div className="relative flex items-center gap-6">
-          <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-[#5B8CFF] to-[#8B5CF6] flex items-center justify-center shadow-glow">
+          <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#4238D6] flex items-center justify-center shadow-glow">
             <Trophy className="h-10 w-10 text-white" />
           </div>
           <div>
@@ -179,7 +179,7 @@ export function AchievementsView() {
                           animate={{ scale: 1 }}
                           transition={{ type: "spring", delay: 0.2 }}
                         >
-                          <CheckCircle2 className="h-3.5 w-3.5 text-[#22C55E]" />
+                          <CheckCircle2 className="h-3.5 w-3.5 text-[#B8FF6A]" />
                         </motion.div>
                       )}
                     </div>

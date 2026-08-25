@@ -6,7 +6,7 @@ export function FullScreenProgress() {
       <div className="relative flex flex-col items-center gap-6">
         <div className="relative h-12 w-12">
           <div className="absolute inset-0 rounded-full border-2 border-border" />
-          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#5B8CFF] animate-spin" />
+          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#6C63FF] animate-spin" />
         </div>
         <div className="text-xs font-medium text-muted-foreground tracking-wide uppercase">
           Loading NEXUS

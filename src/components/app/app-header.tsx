@@ -86,7 +86,7 @@ export function AppHeader() {
         >
           <Bell className="h-4 w-4" />
           {unread > 0 && (
-            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-[#EF4444] text-white text-[10px] font-medium flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-[#E5484D] text-white text-[10px] font-medium flex items-center justify-center">
               {unread}
             </span>
           )}

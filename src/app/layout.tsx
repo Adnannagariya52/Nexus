@@ -1,49 +1,43 @@
 import type { Metadata } from "next"
-import { Inter, JetBrains_Mono } from "next/font/google"
+import { Geist, Geist_Mono, Bricolage_Grotesque } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { NexusSessionProvider } from "@/components/providers/session-provider"
+import { NexusAuthProvider } from "@/components/providers/nexus-auth-provider"
 
-const inter = Inter({
+const geist = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 })
 
-const jetbrains = JetBrains_Mono({
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+  display: "swap",
+})
+
+const geistMono = Geist_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
 })
 
 export const metadata: Metadata = {
-  title: "NEXUS — Your entire student life. One intelligent system.",
+  title: "NEXUS — The Student Operating System",
   description:
-    "NEXUS is a unified digital operating system for students. Plan your studies, master your subjects, track your progress, and solve doubts — all from one beautifully designed workspace.",
-  keywords: [
-    "NEXUS",
-    "student productivity",
-    "study planner",
-    "AI tutor",
-    "academic workspace",
-    "focus timer",
-  ],
+    "Everything you study, everything you plan, everything you're becoming — connected in one intelligent system.",
+  keywords: ["NEXUS", "student OS", "study planner", "AI tutor", "focus timer"],
   authors: [{ name: "NEXUS" }],
-  icons: {
-    icon: "/nexus-mark.svg",
-  },
+  icons: { icon: "/nexus-mark.svg" },
   openGraph: {
     title: "NEXUS",
-    description: "Your entire student life. One intelligent system.",
+    description: "The Student Operating System.",
     siteName: "NEXUS",
     type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "NEXUS",
-    description: "Your entire student life. One intelligent system.",
   },
 }
 
@@ -53,19 +47,21 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
+        className={`${geist.variable} ${bricolage.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange={false}
         >
-          <NexusSessionProvider>
-            {children}
-            <Toaster />
-            <SonnerToaster />
-          </NexusSessionProvider>
+          <NexusAuthProvider>
+            <NexusSessionProvider>
+              {children}
+              <Toaster />
+              <SonnerToaster />
+            </NexusSessionProvider>
+          </NexusAuthProvider>
         </ThemeProvider>
       </body>
     </html>
