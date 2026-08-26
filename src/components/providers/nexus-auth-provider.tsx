@@ -13,14 +13,25 @@ interface AuthContextValue {
 const AuthContext = React.createContext<AuthContextValue | null>(null)
 
 export function NexusAuthProvider({ children }: { children: React.ReactNode }) {
-  const supabase = React.useMemo(() => createSupabaseBrowserClient(), [])
-
   const [user, setUser] = React.useState<User | null>(null)
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user ?? null)
+    // Create client inside useEffect to avoid SSR issues
+    let supabase: ReturnType<typeof createSupabaseBrowserClient> | null = null
+    try {
+      supabase = createSupabaseBrowserClient()
+    } catch (e) {
+      console.error("[NexusAuth] Failed to create Supabase client:", e)
+      setLoading(false)
+      return
+    }
+
+    // getSession reads from cookie — fast and reliable
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null)
+      setLoading(false)
+    }).catch(() => {
       setLoading(false)
     })
 
@@ -30,21 +41,21 @@ export function NexusAuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [])
 
   const signOut = React.useCallback(async () => {
-    // Call supabase signOut — @supabase/ssr handles cookie deletion
-    await supabase.auth.signOut()
-    // Also manually delete all cookies (belt + suspenders)
+    try {
+      const supabase = createSupabaseBrowserClient()
+      await supabase.auth.signOut()
+    } catch {}
     document.cookie.split(";").forEach(function(c) {
       const name = c.split("=")[0].trim()
       if (name) {
         document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`
-        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=localhost`
       }
     })
     setUser(null)
-  }, [supabase])
+  }, [])
 
   return (
     <AuthContext.Provider value={{ user, loading, signOut }}>

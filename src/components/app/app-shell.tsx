@@ -24,13 +24,12 @@ export function AppShell() {
     }
   }, [loading, user, setView])
 
-  if (loading) return <FullScreenProgress />
-  if (!user) return <FullScreenProgress />
+  if (loading || !user) return <FullScreenProgress />
 
   return (
     <DataProvider>
       <OnboardingGate>
-        <div className="relative min-h-screen bg-background text-foreground">
+        <div className="relative min-h-screen bg-paper text-ink">
           <div className="flex">
             <Sidebar />
             <MobileSidebar />
@@ -74,7 +73,7 @@ function RouteRenderer() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
-        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.25, ease: [0.76, 0, 0.24, 1] }}
       >
         <RouteView route={route} />
       </motion.div>
@@ -84,40 +83,23 @@ function RouteRenderer() {
 
 function RouteView({ route }: { route: AppRoute }) {
   switch (route) {
-    case "dashboard":
-      return <DashboardView />
-    case "subjects":
-      return <SubjectsView />
-    case "subject_detail":
-      return <SubjectDetailView />
-    case "assignments":
-      return <AssignmentsView />
-    case "exams":
-      return <ExamsView />
-    case "study":
-      return <StudyPlannerView />
-    case "focus":
-      return <FocusView />
-    case "notes":
-      return <NotesView />
-    case "goals":
-      return <GoalsView />
-    case "habits":
-      return <HabitsView />
-    case "analytics":
-      return <AnalyticsView />
-    case "achievements":
-      return <AchievementsView />
-    case "career":
-      return <CareerView />
-    case "ai-tutor":
-      return <AITutorView />
-    case "profile":
-      return <ProfileView />
-    case "settings":
-      return <SettingsView />
-    default:
-      return <DashboardView />
+    case "dashboard": return <DashboardView />
+    case "subjects": return <SubjectsView />
+    case "subject_detail": return <SubjectDetailView />
+    case "assignments": return <AssignmentsView />
+    case "exams": return <ExamsView />
+    case "study": return <StudyPlannerView />
+    case "focus": return <FocusView />
+    case "notes": return <NotesView />
+    case "goals": return <GoalsView />
+    case "habits": return <HabitsView />
+    case "analytics": return <AnalyticsView />
+    case "achievements": return <AchievementsView />
+    case "career": return <CareerView />
+    case "ai-tutor": return <AITutorView />
+    case "profile": return <ProfileView />
+    case "settings": return <SettingsView />
+    default: return <DashboardView />
   }
 }
 

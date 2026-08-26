@@ -12,7 +12,7 @@ import { FullScreenProgress } from "@/components/nexus/full-screen-progress"
 
 const LandingPage = dynamic(
   () => import("@/components/landing/landing-page").then(m => ({ default: m.LandingPage })),
-  { ssr: false, loading: () => <FullScreenProgress /> }
+  { ssr: false }
 )
 
 const AUTH_VIEWS = new Set(["login", "signup", "forgot", "reset"])
@@ -49,10 +49,19 @@ export default function Page() {
 
   const isAuthView = AUTH_VIEWS.has(view)
 
+  // While auth is loading, show FullScreenProgress for everything
+  if (loading) {
+    return (
+      <>
+        <ToastRegion />
+        <FullScreenProgress />
+      </>
+    )
+  }
+
   return (
     <>
       <ToastRegion />
-      {loading && view !== "landing" && !isAuthView && <FullScreenProgress />}
       {view === "landing" && <LandingPage />}
       {isAuthView && <AuthScreen mode={view as any} />}
       {view === "onboarding" && <OnboardingFlow />}
