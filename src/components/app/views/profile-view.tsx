@@ -100,7 +100,7 @@ export function ProfileView() {
 
       {/* Profile card */}
       <NexusCard className="p-6 relative overflow-hidden">
-        <div className="absolute -top-20 -right-20 h-48 w-48 bg-[#6C63FF]/15 blur-3xl" />
+        <div className="absolute -top-20 -right-20 h-48 w-48 bg-iris/15 blur-3xl" />
         <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
           <div className="relative">
             <Avatar className="h-20 w-20 border-2 border-border">

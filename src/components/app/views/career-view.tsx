@@ -160,7 +160,7 @@ export function CareerView() {
 
       <NexusCard className="p-5">
         <div className="flex items-start gap-3 mb-2">
-          <div className="h-9 w-9 rounded-lg bg-[#6C63FF]/10 text-[#6C63FF] flex items-center justify-center">
+          <div className="h-9 w-9 rounded-lg bg-iris/10 text-iris flex items-center justify-center">
             <Compass className="h-4 w-4" />
           </div>
           <div>

@@ -345,7 +345,7 @@ export function AnalyticsView() {
             </div>
             <div>
               <div className="text-xs text-muted-foreground mb-1">Completed</div>
-              <div className="text-2xl font-semibold text-[#B8FF6A]">{completedTasks}</div>
+              <div className="text-2xl font-semibold text-lime">{completedTasks}</div>
             </div>
             <div>
               <div className="text-xs text-muted-foreground mb-1">Pending</div>

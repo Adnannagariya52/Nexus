@@ -133,13 +133,13 @@ function AppearanceSection({
             className={cn(
               "rounded-xl border p-4 text-left transition-all",
               theme === "dark"
-                ? "border-[#6C63FF] bg-[#6C63FF]/[0.05]"
+                ? "border-[#6C63FF] bg-iris/[0.05]"
                 : "border-border bg-card hover:bg-accent",
             )}
           >
             <div className="flex items-center justify-between mb-3">
-              <Moon className="h-4 w-4 text-[#6C63FF]" />
-              {theme === "dark" && <span className="text-[10px] text-[#6C63FF]">Active</span>}
+              <Moon className="h-4 w-4 text-iris" />
+              {theme === "dark" && <span className="text-[10px] text-iris">Active</span>}
             </div>
             <div className="text-sm font-semibold">Dark</div>
             <div className="text-[10px] text-muted-foreground mt-0.5">
@@ -152,13 +152,13 @@ function AppearanceSection({
             className={cn(
               "rounded-xl border p-4 text-left transition-all",
               theme === "light"
-                ? "border-[#6C63FF] bg-[#6C63FF]/[0.05]"
+                ? "border-[#6C63FF] bg-iris/[0.05]"
                 : "border-border bg-card hover:bg-accent",
             )}
           >
             <div className="flex items-center justify-between mb-3">
               <Sun className="h-4 w-4 text-[#FFB020]" />
-              {theme === "light" && <span className="text-[10px] text-[#6C63FF]">Active</span>}
+              {theme === "light" && <span className="text-[10px] text-iris">Active</span>}
             </div>
             <div className="text-sm font-semibold">Light</div>
             <div className="text-[10px] text-muted-foreground mt-0.5">
@@ -225,7 +225,7 @@ function StudySection() {
       </h3>
       <p className="text-xs text-muted-foreground">
         Study preferences are part of your profile. Edit them in{" "}
-        <a href="#" onClick={() => useApp.getState().navigate("profile")} className="text-[#6C63FF] hover:underline">
+        <a href="#" onClick={() => useApp.getState().navigate("profile")} className="text-iris hover:underline">
           Profile
         </a>
         .

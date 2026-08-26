@@ -26,7 +26,7 @@ export function AuthScreen({ mode }: { mode: Mode }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5 }}
-            className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-[#6C63FF]/20 blur-[120px]"
+            className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-iris/20 blur-[120px]"
           />
           <motion.div
             initial={{ opacity: 0 }}
@@ -231,7 +231,7 @@ function LoginCard() {
             <button
               type="button"
               onClick={() => setView("forgot")}
-              className="text-xs text-[#6C63FF] hover:underline"
+              className="text-xs text-iris hover:underline"
             >
               Forgot password?
             </button>
@@ -275,7 +275,7 @@ function LoginCard() {
 
       <div className="mt-6 text-center text-xs text-white/50">
         Don't have an account?{" "}
-        <button onClick={() => setView("signup")} className="text-[#6C63FF] hover:underline font-medium">
+        <button onClick={() => setView("signup")} className="text-iris hover:underline font-medium">
           Create account
         </button>
       </div>
@@ -468,7 +468,7 @@ function SignupCard() {
 
       <div className="mt-6 text-center text-xs text-white/50">
         Already have an account?{" "}
-        <button onClick={() => setView("login")} className="text-[#6C63FF] hover:underline font-medium">
+        <button onClick={() => setView("login")} className="text-iris hover:underline font-medium">
           Log in
         </button>
       </div>

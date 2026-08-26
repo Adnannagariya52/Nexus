@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 
-// ─── NexusCard ───────────────────────────────────────────────────────────────
+// ─── NexusCard — matches landing page's border/bg/shadow language ────────────
 export function NexusCard({
   children,
   className,
@@ -18,10 +18,10 @@ export function NexusCard({
   return (
     <motion.div
       whileHover={hover ? { y: -2 } : undefined}
-      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.25, ease: [0.76, 0, 0.24, 1] }}
       className={cn(
-        "rounded-xl border border-line bg-white text-ink shadow-soft",
-        hover && "cursor-pointer hover:border-ink/20",
+        "rounded-xl border border-black/[0.06] bg-white shadow-soft",
+        hover && "cursor-pointer hover:border-black/20 transition-colors duration-300",
         className,
       )}
       onClick={onClick}
@@ -32,24 +32,23 @@ export function NexusCard({
   )
 }
 
-// ─── NexusButton ─────────────────────────────────────────────────────────────
+// ─── NexusButton — matches landing page's button language ───────────────────
 type NexusButtonProps = React.ComponentProps<typeof Button> & {
-  variant?: "default" | "iris" | "outline" | "ghost" | "secondary"
+  variant?: "default" | "iris" | "outline" | "ghost"
   size?: "sm" | "default" | "lg" | "icon"
 }
 
 export function NexusButton({ variant = "default", className, ...props }: NexusButtonProps) {
   const variantClass = {
-    default: "bg-ink text-white hover:bg-ink/90 border-0",
-    iris: "bg-iris text-white hover:bg-iris-dark border-0",
-    outline: "border border-line bg-white hover:bg-paper text-ink",
-    ghost: "hover:bg-paper text-ink",
-    secondary: "bg-paper text-ink hover:bg-line",
+    default: "bg-ink text-white hover:bg-coal border-0 rounded-full",
+    iris: "bg-iris text-white hover:bg-iris-dark border-0 rounded-full",
+    outline: "border border-black/15 bg-transparent hover:bg-black/[0.04] text-ink rounded-full",
+    ghost: "hover:bg-black/[0.04] text-ink rounded-full border-0",
   }[variant]
   return <Button className={cn(variantClass, className)} {...props} />
 }
 
-// ─── NexusStatCard ───────────────────────────────────────────────────────────
+// ─── NexusStatCard — matches landing page's StatChip design ──────────────────
 export function NexusStatCard({
   label,
   value,
@@ -64,19 +63,20 @@ export function NexusStatCard({
   icon?: React.ReactNode
 }) {
   return (
-    <NexusCard className="p-5">
-      <div className="text-[10px] uppercase tracking-wider text-mute font-medium font-mono">
+    <div className="rounded-xl border border-black/[0.06] bg-[#FAFAF8] p-4">
+      <div className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.18em] text-black/40">
+        {icon}
         {label}
       </div>
-      <div className="text-2xl font-semibold mt-2 tracking-tight" style={{ color, fontFamily: "var(--font-display)" }}>
+      <div className="mt-2 text-xl font-semibold tracking-tight" style={{ color, fontFamily: "var(--font-display)" }}>
         {value}
       </div>
-      {sub && <div className="text-xs text-mute mt-1">{sub}</div>}
-    </NexusCard>
+      {sub && <div className="mt-1 text-[11px] text-black/40">{sub}</div>}
+    </div>
   )
 }
 
-// ─── NexusProgressRing ──────────────────────────────────────────────────────
+// ─── NexusProgressRing ────────────────────────────────────────────────────────
 export function NexusProgressRing({
   progress,
   size = 60,
@@ -96,26 +96,22 @@ export function NexusProgressRing({
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="transform -rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} stroke="#E5E5E2" strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={radius} stroke="rgba(17,17,17,0.06)" strokeWidth={stroke} fill="none" />
         <motion.circle
           cx={size / 2} cy={size / 2} r={radius}
           stroke={color} strokeWidth={stroke} fill="none" strokeLinecap="round"
           strokeDasharray={circ}
           initial={{ strokeDashoffset: circ }}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
         />
       </svg>
-      {label && (
-        <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
-          {label}
-        </div>
-      )}
+      {label && <div className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold">{label}</div>}
     </div>
   )
 }
 
-// ─── NexusProgressBar ───────────────────────────────────────────────────────
+// ─── NexusProgressBar — matches landing page's progress bar ──────────────────
 export function NexusProgressBar({
   progress,
   color = "#6C63FF",
@@ -126,11 +122,11 @@ export function NexusProgressBar({
   className?: string
 }) {
   return (
-    <div className={cn("h-1 bg-line rounded-full overflow-hidden", className)}>
+    <div className={cn("h-[5px] overflow-hidden rounded-full bg-black/[0.06]", className)}>
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${Math.min(100, progress)}%` }}
-        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
         className="h-full rounded-full"
         style={{ backgroundColor: color }}
       />
@@ -138,14 +134,14 @@ export function NexusProgressBar({
   )
 }
 
-// ─── NexusBadge ──────────────────────────────────────────────────────────────
+// ─── NexusBadge — matches landing page's pill badges ─────────────────────────
 type BadgeColor = "iris" | "lime" | "muted" | "dark"
 
 const badgeColors: Record<BadgeColor, string> = {
-  iris: "bg-iris-soft text-iris-dark border-iris-soft",
-  lime: "bg-lime/15 text-iris-dark border-lime/30",
-  muted: "bg-paper text-mute border-line",
-  dark: "bg-ink text-white border-ink",
+  iris: "bg-iris-soft text-iris-dark border-transparent",
+  lime: "bg-[#B8FF6A]/15 text-[#5B9B1F] border-transparent",
+  muted: "bg-black/[0.04] text-black/50 border-black/[0.06]",
+  dark: "bg-ink text-white border-transparent",
 }
 
 export function NexusBadge({
@@ -160,7 +156,7 @@ export function NexusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[10px] font-medium font-mono",
+        "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[8.5px] tracking-[0.14em] font-medium",
         badgeColors[color],
         className,
       )}
@@ -170,7 +166,7 @@ export function NexusBadge({
   )
 }
 
-// ─── NexusEmptyState ─────────────────────────────────────────────────────────
+// ─── NexusEmptyState ──────────────────────────────────────────────────────────
 export function NexusEmptyState({
   icon,
   title,
@@ -186,20 +182,16 @@ export function NexusEmptyState({
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
       className="flex flex-col items-center justify-center text-center py-16 px-4"
     >
       {icon && (
-        <div className="h-12 w-12 rounded-xl border border-line bg-white flex items-center justify-center text-mute mb-4">
+        <div className="mb-4 h-12 w-12 rounded-xl border border-black/[0.06] bg-[#FAFAF8] flex items-center justify-center text-black/30">
           {icon}
         </div>
       )}
-      <h3 className="text-base font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-        {title}
-      </h3>
-      {description && (
-        <p className="mt-1.5 text-sm text-mute max-w-sm">{description}</p>
-      )}
+      <h3 className="text-base font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>{title}</h3>
+      {description && <p className="mt-1.5 text-sm text-black/40 max-w-sm">{description}</p>}
       {action && <div className="mt-5">{action}</div>}
     </motion.div>
   )
@@ -216,6 +208,7 @@ export function NexusSkeletonCard() {
   )
 }
 
+// ─── NexusViewHeader — matches landing page's editorial heading style ────────
 export function NexusViewHeader({
   title,
   subtitle,
@@ -229,14 +222,23 @@ export function NexusViewHeader({
     <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
       <div>
         <h1
-          className="text-2xl sm:text-3xl font-semibold tracking-tight"
+          className="text-2xl font-semibold tracking-tight"
           style={{ fontFamily: "var(--font-display)" }}
         >
           {title}
         </h1>
-        {subtitle && <p className="mt-1.5 text-sm text-mute">{subtitle}</p>}
+        {subtitle && <p className="mt-1.5 text-sm text-black/40">{subtitle}</p>}
       </div>
       {action && <div>{action}</div>}
     </div>
+  )
+}
+
+// ─── NexusSectionLabel — the mono uppercase label used throughout ───────────
+export function NexusSectionLabel({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span className={cn("font-mono text-[9px] tracking-[0.25em] text-black/40 font-medium", className)}>
+      {children}
+    </span>
   )
 }

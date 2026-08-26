@@ -85,7 +85,7 @@ export function OnboardingFlow() {
         <motion.div
           animate={{ x: [0, 50, 0], y: [0, -30, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-[#6C63FF]/15 blur-[120px]"
+          className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-iris/15 blur-[120px]"
         />
         <motion.div
           animate={{ x: [0, -50, 0], y: [0, 30, 0] }}
@@ -222,7 +222,7 @@ export function OnboardingFlow() {
                     className={cn(
                       "text-left p-4 rounded-xl border transition-all",
                       data.academicGoal === o.v
-                        ? "border-[#6C63FF] bg-[#6C63FF]/[0.08]"
+                        ? "border-[#6C63FF] bg-iris/[0.08]"
                         : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/10",
                     )}
                   >
@@ -308,7 +308,7 @@ function StepCard({
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       className="glass-strong border border-white/[0.08] rounded-2xl p-6 sm:p-8 shadow-premium"
     >
-      <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#6C63FF]/20 to-[#4238D6]/20 text-[#6C63FF] mb-5">
+      <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#6C63FF]/20 to-[#4238D6]/20 text-iris mb-5">
         {icon}
       </div>
       {children}
@@ -345,7 +345,7 @@ function SelectButton({
         "rounded-xl border text-sm transition-all flex items-center justify-center gap-2",
         large ? "h-16" : "h-11",
         active
-          ? "border-[#6C63FF] bg-[#6C63FF]/[0.1] text-white"
+          ? "border-[#6C63FF] bg-iris/[0.1] text-white"
           : "border-white/[0.06] bg-white/[0.02] text-white/70 hover:bg-white/[0.04] hover:border-white/10",
       )}
     >
@@ -363,7 +363,7 @@ function CelebrationScreen({ onEnter }: { onEnter: () => void }) {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="glass-strong border border-white/[0.08] rounded-2xl p-8 sm:p-10 shadow-premium text-center relative overflow-hidden"
     >
-      <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-40 w-80 bg-[#6C63FF]/20 blur-3xl" />
+      <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-40 w-80 bg-iris/20 blur-3xl" />
 
       <motion.div
         initial={{ scale: 0, rotate: -30 }}
@@ -406,7 +406,7 @@ function CelebrationScreen({ onEnter }: { onEnter: () => void }) {
             key={f.label}
             className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-center"
           >
-            <f.icon className="h-4 w-4 mx-auto mb-1 text-[#6C63FF]" />
+            <f.icon className="h-4 w-4 mx-auto mb-1 text-iris" />
             <div className="text-[10px] text-white/60">{f.label}</div>
           </div>
         ))}

@@ -113,7 +113,7 @@ export function NotificationsDrawer() {
                       key={n.id}
                       className={cn(
                         "rounded-xl border p-3 flex gap-3 transition-colors",
-                        n.read ? "border-border bg-card" : "border-[#6C63FF]/20 bg-[#6C63FF]/[0.04]",
+                        n.read ? "border-border bg-card" : "border-[#6C63FF]/20 bg-iris/[0.04]",
                       )}
                     >
                       <div

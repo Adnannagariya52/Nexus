@@ -113,7 +113,7 @@ export function StudyPlannerView() {
         {/* Log session */}
         <NexusCard className="p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Zap className="h-4 w-4 text-[#6C63FF]" />
+            <Zap className="h-4 w-4 text-iris" />
             <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Log session
             </h3>
@@ -137,7 +137,7 @@ export function StudyPlannerView() {
                   className={cn(
                     "h-9 rounded-lg text-xs font-medium transition-colors",
                     duration === m
-                      ? "bg-[#6C63FF] text-white"
+                      ? "bg-iris text-white"
                       : "bg-card border border-border hover:bg-accent",
                   )}
                 >
@@ -151,7 +151,7 @@ export function StudyPlannerView() {
             </NexusButton>
             <div className="text-[10px] text-muted-foreground">
               For a focused Pomodoro experience, use{" "}
-              <button onClick={() => navigate("focus")} className="text-[#6C63FF] hover:underline">
+              <button onClick={() => navigate("focus")} className="text-iris hover:underline">
                 Focus Mode
               </button>
               .
@@ -163,7 +163,7 @@ export function StudyPlannerView() {
         <NexusCard className="lg:col-span-2 p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-[#B8FF6A]" />
+              <Target className="h-4 w-4 text-lime" />
               <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Today's Priorities
               </h3>
@@ -252,14 +252,14 @@ export function StudyPlannerView() {
                 className={cn(
                   "rounded-xl border p-3 text-center min-h-[110px] flex flex-col",
                   isToday
-                    ? "border-[#6C63FF] bg-[#6C63FF]/[0.04]"
+                    ? "border-[#6C63FF] bg-iris/[0.04]"
                     : "border-border bg-card",
                 )}
               >
                 <div
                   className={cn(
                     "text-[10px] uppercase tracking-wide font-medium",
-                    isToday ? "text-[#6C63FF]" : "text-muted-foreground",
+                    isToday ? "text-iris" : "text-muted-foreground",
                   )}
                 >
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.day.getDay()]}
@@ -288,7 +288,7 @@ export function StudyPlannerView() {
       {subjectProgress.length > 0 && (
         <NexusCard className="p-5">
           <div className="flex items-center gap-2 mb-4">
-            <BookOpen className="h-4 w-4 text-[#4238D6]" />
+            <BookOpen className="h-4 w-4 text-iris-dark" />
             <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Subject Progress
             </h3>

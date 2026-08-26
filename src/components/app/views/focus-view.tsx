@@ -148,9 +148,9 @@ export function FocusView() {
               transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
               className="absolute inset-0"
             >
-              <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-[#6C63FF]/10 blur-3xl" />
+              <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-iris/10 blur-3xl" />
               <div className="absolute top-1/2 -right-32 h-64 w-64 rounded-full bg-[#4238D6]/10 blur-3xl" />
-              <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-[#6C63FF]/10 blur-3xl" />
+              <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-iris/10 blur-3xl" />
             </motion.div>
           </div>
 
@@ -170,8 +170,8 @@ export function FocusView() {
               <span
                 className={cn(
                   "h-1.5 w-1.5 rounded-full",
-                  state === "focusing" && "bg-[#6C63FF] animate-pulse",
-                  state === "completed" && "bg-[#B8FF6A]",
+                  state === "focusing" && "bg-iris animate-pulse",
+                  state === "completed" && "bg-lime",
                   state === "paused" && "bg-[#FFB020]",
                   state === "ready" && "bg-muted-foreground",
                 )}
@@ -282,7 +282,7 @@ export function FocusView() {
                   className={cn(
                     "rounded-lg border p-3 text-left transition-all",
                     duration === p.minutes
-                      ? "border-[#6C63FF] bg-[#6C63FF]/[0.08]"
+                      ? "border-[#6C63FF] bg-iris/[0.08]"
                       : "border-border bg-card hover:bg-accent",
                     (state === "focusing" || state === "paused") && "opacity-50 cursor-not-allowed",
                   )}
@@ -325,7 +325,7 @@ export function FocusView() {
               Today
             </div>
             <div className="flex items-center gap-2">
-              <Timer className="h-5 w-5 text-[#6C63FF]" />
+              <Timer className="h-5 w-5 text-iris" />
               <div className="text-2xl font-semibold">
                 {Math.floor(todayMin / 60)}h {todayMin % 60}m
               </div>
@@ -358,7 +358,7 @@ export function FocusView() {
                 key={s.id}
                 className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
               >
-                <div className="h-8 w-8 rounded-lg bg-[#6C63FF]/10 text-[#6C63FF] flex items-center justify-center">
+                <div className="h-8 w-8 rounded-lg bg-iris/10 text-iris flex items-center justify-center">
                   <Flame className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -407,7 +407,7 @@ export function FocusView() {
               </p>
               <div className="mt-6 grid grid-cols-3 gap-2 text-center">
                 <div className="rounded-lg border border-border bg-card p-3">
-                  <Zap className="h-3.5 w-3.5 mx-auto mb-1 text-[#6C63FF]" />
+                  <Zap className="h-3.5 w-3.5 mx-auto mb-1 text-iris" />
                   <div className="text-xs font-medium">+{duration} min</div>
                 </div>
                 <div className="rounded-lg border border-border bg-card p-3">
@@ -415,7 +415,7 @@ export function FocusView() {
                   <div className="text-xs font-medium">Streak up</div>
                 </div>
                 <div className="rounded-lg border border-border bg-card p-3">
-                  <Timer className="h-3.5 w-3.5 mx-auto mb-1 text-[#B8FF6A]" />
+                  <Timer className="h-3.5 w-3.5 mx-auto mb-1 text-lime" />
                   <div className="text-xs font-medium">{todayMin + duration}m today</div>
                 </div>
               </div>

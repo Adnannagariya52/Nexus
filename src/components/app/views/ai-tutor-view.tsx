@@ -223,7 +223,7 @@ export function AITutorView() {
         <NexusCard className="hidden lg:flex flex-col p-3 overflow-hidden">
           <div className="flex items-center justify-between mb-3 px-1">
             <div className="flex items-center gap-2">
-              <Brain className="h-4 w-4 text-[#4238D6]" />
+              <Brain className="h-4 w-4 text-iris-dark" />
               <span className="text-sm font-semibold">Conversations</span>
             </div>
             <button
@@ -378,12 +378,12 @@ export function AITutorView() {
                         className={cn(
                           "rounded-2xl px-4 py-2.5 text-sm",
                           m.role === "user"
-                            ? "bg-[#6C63FF]/[0.15] border border-[#6C63FF]/30 text-foreground rounded-tr-md"
+                            ? "bg-iris/[0.15] border border-[#6C63FF]/30 text-foreground rounded-tr-md"
                             : "bg-card border border-border text-foreground rounded-tl-md",
                         )}
                       >
                         {m.role === "assistant" ? (
-                          <div className="prose prose-sm prose-invert max-w-none [&>*]:first:mt-0 [&>*]:last:mb-0 [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_pre]:bg-background/50 [&_pre]:border [&_pre]:border-border [&_code]:text-[#6C63FF] [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-sm [&_h3]:font-semibold [&_strong]:text-foreground">
+                          <div className="prose prose-sm prose-invert max-w-none [&>*]:first:mt-0 [&>*]:last:mb-0 [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_pre]:bg-background/50 [&_pre]:border [&_pre]:border-border [&_code]:text-iris [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-semibold [&_h3]:text-sm [&_h3]:font-semibold [&_strong]:text-foreground">
                             <ReactMarkdown>{m.content}</ReactMarkdown>
                           </div>
                         ) : (
@@ -415,13 +415,13 @@ export function AITutorView() {
                       <Brain className="h-4 w-4 text-white" />
                     </div>
                     <div className="rounded-2xl rounded-tl-md bg-card border border-border px-4 py-3 flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] animate-bounce" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-iris animate-bounce" />
                       <span
-                        className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] animate-bounce"
+                        className="h-1.5 w-1.5 rounded-full bg-iris animate-bounce"
                         style={{ animationDelay: "0.15s" }}
                       />
                       <span
-                        className="h-1.5 w-1.5 rounded-full bg-[#6C63FF] animate-bounce"
+                        className="h-1.5 w-1.5 rounded-full bg-iris animate-bounce"
                         style={{ animationDelay: "0.3s" }}
                       />
                     </div>
@@ -444,7 +444,7 @@ export function AITutorView() {
                   className={cn(
                     "shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-full text-[10px] font-medium border transition-all",
                     quickAction === q.id
-                      ? "bg-[#6C63FF]/15 border-[#6C63FF]/40 text-[#6C63FF]"
+                      ? "bg-iris/15 border-[#6C63FF]/40 text-iris"
                       : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-accent",
                   )}
                 >

@@ -179,7 +179,7 @@ export function AchievementsView() {
                           animate={{ scale: 1 }}
                           transition={{ type: "spring", delay: 0.2 }}
                         >
-                          <CheckCircle2 className="h-3.5 w-3.5 text-[#B8FF6A]" />
+                          <CheckCircle2 className="h-3.5 w-3.5 text-lime" />
                         </motion.div>
                       )}
                     </div>

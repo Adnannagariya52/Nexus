@@ -234,9 +234,9 @@ export function SubjectDetailView() {
                     className={cn(
                       "h-7 w-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
                       c.status === "completed"
-                        ? "bg-[#B8FF6A] border-[#B8FF6A] text-white"
+                        ? "bg-lime border-[#B8FF6A] text-white"
                         : c.status === "in_progress"
-                          ? "border-[#6C63FF] text-[#6C63FF]"
+                          ? "border-[#6C63FF] text-iris"
                           : "border-border text-transparent",
                     )}
                   >
@@ -295,7 +295,7 @@ export function SubjectDetailView() {
             </h3>
             <button
               onClick={() => navigate("assignments")}
-              className="text-xs text-[#6C63FF] hover:underline"
+              className="text-xs text-iris hover:underline"
             >
               View all
             </button>
@@ -311,7 +311,7 @@ export function SubjectDetailView() {
                   <CheckCircle2
                     className={cn(
                       "h-4 w-4",
-                      a.status === "completed" ? "text-[#B8FF6A]" : "text-muted-foreground",
+                      a.status === "completed" ? "text-lime" : "text-muted-foreground",
                     )}
                   />
                   <span className={cn("flex-1 truncate", a.status === "completed" && "line-through text-muted-foreground")}>
@@ -335,7 +335,7 @@ export function SubjectDetailView() {
             </h3>
             <button
               onClick={() => navigate("notes")}
-              className="text-xs text-[#6C63FF] hover:underline"
+              className="text-xs text-iris hover:underline"
             >
               View all
             </button>

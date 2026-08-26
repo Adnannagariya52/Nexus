@@ -221,7 +221,7 @@ export function AssignmentsView() {
                     className={cn(
                       "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
                       a.status === "completed"
-                        ? "bg-[#B8FF6A] border-[#B8FF6A] text-white"
+                        ? "bg-lime border-[#B8FF6A] text-white"
                         : "border-border hover:border-[#B8FF6A]",
                     )}
                   >
@@ -299,7 +299,7 @@ export function AssignmentsView() {
                       className={cn(
                         "h-5 w-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
                         a.status === "completed"
-                          ? "bg-[#B8FF6A] border-[#B8FF6A] text-white"
+                          ? "bg-lime border-[#B8FF6A] text-white"
                           : "border-border hover:border-[#B8FF6A]",
                       )}
                     >

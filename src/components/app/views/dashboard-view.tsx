@@ -3,33 +3,15 @@
 import * as React from "react"
 import { motion } from "framer-motion"
 import { useApp } from "@/lib/store"
-import { useData, createResource, updateResource } from "@/lib/data-client"
+import { useData, updateResource } from "@/lib/data-client"
 import {
-  NexusCard,
-  NexusStatCard,
-  NexusProgressRing,
-  NexusBadge,
-  NexusEmptyState,
-  NexusViewHeader,
-  NexusButton,
-  NexusProgressBar,
-} from "@/components/nexus/primitives"
-import {
-  Flame,
-  Target,
-  Timer,
-  Brain,
-  CalendarClock,
-  CheckCircle2,
-  TrendingUp,
-  Zap,
-  ArrowRight,
-  Sparkles,
-  Award,
-  PlayCircle,
+  Flame, Timer, CheckCircle2, CalendarClock, TrendingUp,
+  ArrowRight, Sparkles, Brain,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+
+const EASE = [0.76, 0, 0.24, 1] as const
 
 export function DashboardView() {
   const navigate = useApp((s) => s.navigate)
@@ -40,112 +22,57 @@ export function DashboardView() {
   const exams = snapshot?.exams || []
   const subjects = snapshot?.subjects || []
   const focusSessions = snapshot?.focusSessions || []
-  const studySessions = snapshot?.studySessions || []
   const habits = snapshot?.habits || []
   const habitLogs = snapshot?.habitLogs || []
-  const achievements = snapshot?.achievements || []
   const goals = snapshot?.goals || []
 
-  // ─── Derived metrics ──────────────────────────────────────────────────────
   const today = new Date()
   const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate())
   const startOfWeek = new Date(startOfDay)
   startOfWeek.setDate(startOfWeek.getDate() - 6)
 
-  const todaysFocus = focusSessions.filter(
-    (f) => new Date(f.startedAt) >= startOfDay && f.status === "completed",
-  )
+  const todaysFocus = focusSessions.filter((f) => new Date(f.startedAt) >= startOfDay && f.status === "completed")
   const todaysStudyMin = todaysFocus.reduce((sum, f) => sum + f.durationMinutes, 0)
-  const weekFocus = focusSessions.filter((f) => new Date(f.startedAt) >= startOfWeek)
-  const weekMin = weekFocus.reduce((sum, f) => sum + f.durationMinutes, 0)
+  const weekMin = focusSessions.filter((f) => new Date(f.startedAt) >= startOfWeek).reduce((sum, f) => sum + f.durationMinutes, 0)
 
-  // Streak calculation (consecutive days with at least one focus session)
   const streak = React.useMemo(() => {
     const days = new Set<string>()
-    focusSessions.forEach((f) => {
-      if (f.status !== "completed") return
-      const d = new Date(f.startedAt)
-      const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
-      days.add(key)
-    })
-    let s = 0
-    const d = new Date()
-    while (true) {
-      const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
-      if (days.has(key)) {
-        s++
-        d.setDate(d.getDate() - 1)
-      } else break
-    }
+    focusSessions.forEach((f) => { if (f.status === "completed") days.add(new Date(f.startedAt).toDateString()) })
+    let s = 0; const d = new Date()
+    while (days.has(d.toDateString())) { s++; d.setDate(d.getDate() - 1) }
     return s
   }, [focusSessions])
 
-  // Focus score (0-100): based on today's study / target
   const target = profile?.studyTargetMinutes || 60
   const focusScore = Math.min(100, Math.round((todaysStudyMin / target) * 100))
 
-  // Today's tasks
   const todayKey = today.toDateString()
-  const todaysTasks = assignments.filter((a) => {
-    if (a.status === "completed") return false
-    if (!a.dueDate) return false
-    return new Date(a.dueDate).toDateString() === todayKey
-  })
-  const overdueTasks = assignments.filter(
-    (a) => a.status !== "completed" && a.dueDate && new Date(a.dueDate) < startOfDay,
-  )
+  const todaysTasks = assignments.filter((a) => a.status !== "completed" && a.dueDate && new Date(a.dueDate).toDateString() === todayKey)
+  const overdueTasks = assignments.filter((a) => a.status !== "completed" && a.dueDate && new Date(a.dueDate) < startOfDay)
   const upcoming = [...todaysTasks, ...overdueTasks].slice(0, 5)
 
-  // Upcoming exams
-  const upcomingExams = exams
-    .filter((e) => new Date(e.examDate) >= new Date())
-    .sort((a, b) => new Date(a.examDate).getTime() - new Date(b.examDate).getTime())
-    .slice(0, 3)
-
-  // Today's mission: pick most urgent assignment or nearest exam
+  const upcomingExams = exams.filter((e) => new Date(e.examDate) >= new Date()).sort((a, b) => new Date(a.examDate).getTime() - new Date(b.examDate).getTime()).slice(0, 3)
   const nextExam = upcomingExams[0]
-  const urgentAssignment = upcoming[0]
-  const weakestSubject = subjects
-    .map((s) => {
-      const chapters = s.chapters || []
-      const completed = chapters.filter((c) => c.status === "completed").length
-      const pct = chapters.length ? (completed / chapters.length) * 100 : 0
-      return { subject: s, pct }
-    })
-    .sort((a, b) => a.pct - b.pct)[0]
 
   const firstName = (profile?.fullName || "Student").split(" ")[0]
-  const greeting = (() => {
-    const h = today.getHours()
-    return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"
-  })()
+  const greeting = (() => { const h = today.getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening" })()
 
   async function completeAssignment(id: string) {
     try {
-      await mutate(() =>
-        updateResource("assignment", id, { status: "completed", completedAt: new Date().toISOString() }),
-      )
+      await mutate(() => updateResource("assignment", id, { status: "completed", completedAt: new Date().toISOString() }))
       toast.success("Assignment completed!")
-    } catch {
-      toast.error("We couldn't update that right now.")
-    }
+    } catch { toast.error("We couldn't update that right now.") }
   }
 
-  // Habit check today
   const todayHabitLogs = habitLogs.filter((l) => new Date(l.completedDate).toDateString() === todayKey)
-  const habitCompletionRate = habits.length
-    ? Math.round((todayHabitLogs.length / habits.length) * 100)
-    : 0
+  const habitCompletionRate = habits.length ? Math.round((todayHabitLogs.length / habits.length) * 100) : 0
+  const completedTasks = assignments.filter((a) => a.status === "completed").length
 
-  // Weekly activity for the mini-chart
   const weeklyActivity = Array.from({ length: 7 }, (_, i) => {
-    const day = new Date(startOfWeek)
-    day.setDate(day.getDate() + i)
+    const day = new Date(startOfWeek); day.setDate(day.getDate() + i)
     const key = day.toDateString()
-    const min = focusSessions
-      .filter((f) => f.status === "completed" && new Date(f.startedAt).toDateString() === key)
-      .reduce((sum, f) => sum + f.durationMinutes, 0)
-    return { day: ["S", "M", "T", "W", "T", "F", "S"][day.getDay()], min }
+    const min = focusSessions.filter((f) => f.status === "completed" && new Date(f.startedAt).toDateString() === key).reduce((sum, f) => sum + f.durationMinutes, 0)
+    return { day: ["S","M","T","W","T","F","S"][day.getDay()], min }
   })
   const maxMin = Math.max(60, ...weeklyActivity.map((d) => d.min))
 
@@ -154,513 +81,278 @@ export function DashboardView() {
   return (
     <div className="space-y-6 pb-8">
       {/* Greeting */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        <div>
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-xs text-muted-foreground"
-          >
-            {today.toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            })}
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="text-2xl sm:text-3xl font-semibold tracking-tight mt-1"
-          >
-            {greeting}, {firstName}.
-          </motion.h1>
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }}>
+        <div className="font-mono text-[9px] tracking-[0.25em] text-black/40">
+          {today.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase()} · {today.toLocaleDateString("en-US", { month: "long", day: "numeric" }).toUpperCase()}
         </div>
-        <NexusButton
-          variant="default"
-          size="default"
-          onClick={() => navigate("focus")}
-          className="gap-1.5"
-        >
-          <PlayCircle className="h-4 w-4" />
-          Start focus session
-        </NexusButton>
-      </div>
+        <h1 className="mt-1.5 text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+          {greeting}, {firstName}.
+        </h1>
+        <p className="mt-1.5 text-sm text-black/40">
+          {upcoming.length > 0 ? `${upcoming.length} ${upcoming.length === 1 ? "thing" : "things"} worth focusing on today.` : "Your day is clear. Plan ahead."}
+        </p>
+      </motion.div>
 
-      {/* Stat row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <NexusStatCard
-          label="Focus Score"
-          value={`${focusScore}%`}
-          sub={`Target: ${target}m`}
-          color="#6C63FF"
-          icon={<Zap className="h-4 w-4" />}
-        />
-        <NexusStatCard
-          label="Streak"
-          value={`${streak}d`}
-          sub={streak > 0 ? "Keep it going!" : "Start today"}
-          color="#FFB020"
-          icon={<Flame className="h-4 w-4" />}
-        />
-        <NexusStatCard
-          label="Today"
-          value={`${Math.floor(todaysStudyMin / 60)}h ${todaysStudyMin % 60}m`}
-          sub="Focused"
-          color="#B8FF6A"
-          icon={<Timer className="h-4 w-4" />}
-        />
-        <NexusStatCard
-          label="Week"
-          value={`${Math.floor(weekMin / 60)}h ${weekMin % 60}m`}
-          sub="Last 7 days"
-          color="#4238D6"
-          icon={<TrendingUp className="h-4 w-4" />}
-        />
-      </div>
+      {/* Stat chips — matches landing page's StatChip design */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1, ease: EASE }} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { icon: Flame, label: "STREAK", value: `${streak} days`, accent: false },
+          { icon: Timer, label: "FOCUS TODAY", value: `${Math.floor(todaysStudyMin / 60)}h ${todaysStudyMin % 60}m`, accent: true },
+          { icon: CheckCircle2, label: "TASKS", value: `${completedTasks} / ${assignments.length}`, accent: false },
+          { icon: TrendingUp, label: "THIS WEEK", value: `${Math.floor(weekMin / 60)}h ${weekMin % 60}m`, accent: false },
+        ].map((s) => (
+          <div key={s.label} className="rounded-xl border border-black/[0.06] bg-[#FAFAF8] p-4">
+            <div className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.18em] text-black/40">
+              <s.icon className={cn("h-3 w-3", s.accent && "text-iris")} strokeWidth={2.4} />
+              {s.label}
+            </div>
+            <div className="mt-2 text-xl font-semibold tracking-tight" style={{ color: s.accent ? "#6C63FF" : "#111111", fontFamily: "var(--font-display)" }}>
+              {s.value}
+            </div>
+          </div>
+        ))}
+      </motion.div>
 
-      {/* Main grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Today's mission - dominant */}
-        <NexusCard className="lg:col-span-2 p-6 relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 h-32 w-32 bg-[#6C63FF]/10 blur-3xl" />
-          <div className="relative">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[#6C63FF]" />
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                  Today's Mission
-                </h3>
+      {/* Main grid — TODAY (left, 3/5) + UP NEXT (right, 2/5) */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15, ease: EASE }} className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        {/* TODAY panel */}
+        <div className="lg:col-span-3 rounded-xl border border-black/[0.06] bg-white p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <span className="font-mono text-[9px] tracking-[0.25em] text-black/40 font-medium">TODAY</span>
+            <span className="font-mono text-[9px] text-iris">{upcoming.length} LEFT</span>
+          </div>
+          {upcoming.length === 0 ? (
+            <div className="py-8 text-center">
+              <CheckCircle2 className="h-6 w-6 text-black/20 mx-auto mb-3" strokeWidth={2} />
+              <div className="text-sm text-black/40">Nothing waiting for you.</div>
+            </div>
+          ) : (
+            <div className="space-y-[7px]">
+              {upcoming.map((a) => {
+                const overdue = a.dueDate && new Date(a.dueDate) < startOfDay
+                return (
+                  <div key={a.id} className="flex items-center gap-2.5 group">
+                    <button
+                      onClick={() => completeAssignment(a.id)}
+                      className="h-[15px] w-[15px] shrink-0 rounded-[5px] border border-black/20 hover:border-iris hover:bg-iris-soft/40 transition-colors flex items-center justify-center"
+                      aria-label="Mark complete"
+                    >
+                      <CheckCircle2 className="h-3 w-3 text-iris opacity-0 hover:opacity-100 transition-opacity" strokeWidth={2.2} />
+                    </button>
+                    <span className="truncate text-[12px] text-black/80 group-hover:text-ink transition-colors">{a.title}</span>
+                    {overdue && <span className="font-mono text-[8px] text-[#E5484D]">OVERDUE</span>}
+                    <span className="ml-auto shrink-0 font-mono text-[8px] text-black/30">
+                      {a.subject?.name?.toUpperCase().slice(0, 8) || "—"}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+          {/* AI suggestion bar */}
+          <div className="mt-4 hidden sm:flex items-center gap-2 rounded-lg bg-iris-soft/60 p-2.5">
+            <Sparkles className="h-3.5 w-3.5 shrink-0 text-iris" strokeWidth={2.2} />
+            <span className="text-[11px] leading-snug text-iris-dark">
+              {nextExam
+                ? `${nextExam.title} in ${Math.max(0, Math.ceil((new Date(nextExam.examDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} days — schedule a review session.`
+                : "Take a 25-min focus session to build momentum."}
+            </span>
+          </div>
+        </div>
+
+        {/* UP NEXT panel */}
+        <div className="lg:col-span-2 rounded-xl border border-black/[0.06] bg-white p-5">
+          <div className="mb-4 font-mono text-[9px] tracking-[0.25em] text-black/40 font-medium">UP NEXT</div>
+          {nextExam ? (
+            <>
+              <div className="text-3xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+                {Math.max(0, Math.ceil((new Date(nextExam.examDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))}
+                <span className="text-sm font-normal text-black/40 ml-2">days</span>
               </div>
-              <NexusBadge color="blue">Auto-prioritized</NexusBadge>
+              <div className="mt-2 text-sm font-medium">{nextExam.title}</div>
+              <div className="text-[11px] text-black/40 mt-0.5">
+                {nextExam.subject?.name || "No subject"} · {new Date(nextExam.examDate).toLocaleDateString()}
+              </div>
+              <div className="mt-3">
+                <div className="h-[5px] overflow-hidden rounded-full bg-black/[0.06]">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${nextExam.preparationProgress}%` }}
+                    transition={{ duration: 1, ease: EASE }}
+                    className="h-full rounded-full bg-iris"
+                  />
+                </div>
+                <div className="mt-1.5 font-mono text-[8.5px] tracking-[0.15em] text-black/40">
+                  {nextExam.preparationProgress}% READY
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="py-8 text-center">
+              <CalendarClock className="h-6 w-6 text-black/20 mx-auto mb-3" strokeWidth={2} />
+              <div className="text-sm text-black/40">No exams scheduled.</div>
+              <button onClick={() => navigate("exams")} className="mt-3 text-[11px] text-iris hover:underline">Add one →</button>
             </div>
-
-            <div className="grid sm:grid-cols-2 gap-3">
-              {/* Urgent assignment */}
-              <button
-                onClick={() => navigate("assignments")}
-                className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#6C63FF]/30 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <NexusBadge color={urgentAssignment ? (urgentAssignment.priority as any) || "amber" : "muted"}>
-                    {urgentAssignment?.priority?.toUpperCase() || "No priority"}
-                  </NexusBadge>
-                  <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="text-sm font-medium">
-                  {urgentAssignment?.title || "No urgent tasks"}
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {urgentAssignment?.dueDate
-                    ? `Due ${new Date(urgentAssignment.dueDate).toLocaleDateString()}`
-                    : "Enjoy the calm"}
-                </div>
-              </button>
-
-              {/* Next exam */}
-              <button
-                onClick={() => navigate("exams")}
-                className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#FFB020]/30 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <NexusBadge color={nextExam ? "amber" : "muted"}>
-                    {nextExam ? "Upcoming exam" : "No exams"}
-                  </NexusBadge>
-                  <CalendarClock className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="text-sm font-medium">
-                  {nextExam?.title || "No exams scheduled"}
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {nextExam
-                    ? `In ${Math.max(0, Math.ceil((new Date(nextExam.examDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} days`
-                    : "Add one to prepare"}
-                </div>
-              </button>
-
-              {/* Weakest subject */}
-              <button
-                onClick={() => navigate("subjects")}
-                className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#4238D6]/30 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <NexusBadge color="violet">Focus area</NexusBadge>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="text-sm font-medium">
-                  {weakestSubject?.subject.name || "No subjects yet"}
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {weakestSubject
-                    ? `${Math.round(weakestSubject.pct)}% complete`
-                    : "Add your first subject"}
-                </div>
-              </button>
-
-              {/* Recommended focus session */}
-              <button
-                onClick={() => navigate("focus")}
-                className="text-left rounded-xl border border-border bg-gradient-to-br from-[#6C63FF]/[0.08] to-[#4238D6]/[0.05] p-4 hover:border-[#6C63FF]/40 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <NexusBadge color="cyan">Recommended</NexusBadge>
-                  <PlayCircle className="h-4 w-4 text-[#6C63FF]" />
-                </div>
-                <div className="text-sm font-medium">25 min focus session</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  Build momentum with Pomodoro
-                </div>
-              </button>
+          )}
+          {/* Week load mini-chart */}
+          <div className="mt-auto pt-4 border-t border-black/[0.06] mt-4">
+            <div className="flex justify-between font-mono text-[8.5px] tracking-[0.15em] text-black/40 mb-2">
+              <span>WEEK LOAD</span>
+              <span className="text-ink">{focusScore > 50 ? "ON TRACK" : "BUILDING"}</span>
             </div>
-          </div>
-        </NexusCard>
-
-        {/* Weekly activity */}
-        <NexusCard className="p-6">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Weekly Activity
-            </h3>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="flex items-end justify-between gap-2 h-32">
-            {weeklyActivity.map((d, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
-                <div className="flex-1 w-full flex items-end">
+            <div className="flex gap-1">
+              {weeklyActivity.map((d, i) => (
+                <div key={i} className="flex h-8 flex-1 items-end rounded-[4px] bg-black/[0.035]">
                   <motion.div
                     initial={{ height: 0 }}
                     animate={{ height: `${(d.min / maxMin) * 100}%` }}
-                    transition={{ duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                    className={cn(
-                      "w-full rounded-t-md",
-                      i === 6
-                        ? "bg-gradient-to-t from-[#6C63FF] to-[#4238D6]"
-                        : "bg-white/10",
-                    )}
-                    style={{ minHeight: "4px" }}
+                    transition={{ duration: 0.8, delay: 0.3 + i * 0.08, ease: EASE }}
+                    className={cn("w-full rounded-[4px]", i === 6 ? "bg-iris" : "bg-ink/70")}
+                    style={{ opacity: i === 6 ? 1 : 0.35 + (d.min / maxMin) / 2 }}
                   />
                 </div>
-                <div className="text-[10px] text-muted-foreground">{d.day}</div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-4 border-t border-border">
-            <div className="text-xs text-muted-foreground">Total this week</div>
-            <div className="text-xl font-semibold mt-0.5">
-              {Math.floor(weekMin / 60)}h {weekMin % 60}m
+              ))}
             </div>
           </div>
-        </NexusCard>
-      </div>
+        </div>
+      </motion.div>
 
-      {/* Today's tasks + upcoming exams */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <NexusCard className="p-6">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Today's Tasks
-            </h3>
-            <button
-              onClick={() => navigate("assignments")}
-              className="text-xs text-[#6C63FF] hover:underline flex items-center gap-1"
-            >
-              View all
-              <ArrowRight className="h-3 w-3" />
-            </button>
-          </div>
-          {upcoming.length === 0 ? (
-            <NexusEmptyState
-              icon={<CheckCircle2 className="h-5 w-5" />}
-              title="Nothing waiting for you."
-              description="No tasks due today. Time to plan ahead."
-              action={
-                <NexusButton size="sm" onClick={() => navigate("assignments")}>
-                  Create assignment
-                </NexusButton>
-              }
-            />
-          ) : (
-            <div className="space-y-2">
-              {upcoming.map((a) => {
-                const overdue =
-                  a.dueDate && new Date(a.dueDate) < startOfDay
-                return (
-                  <div
-                    key={a.id}
-                    className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
-                  >
-                    <button
-                      onClick={() => completeAssignment(a.id)}
-                      className="h-5 w-5 rounded-full border-2 border-border hover:border-[#B8FF6A] flex items-center justify-center transition-colors"
-                      aria-label="Mark complete"
-                    >
-                      <CheckCircle2 className="h-3 w-3 opacity-0 hover:opacity-100 text-[#B8FF6A]" />
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">{a.title}</div>
-                      <div className="text-[10px] text-muted-foreground">
-                        {a.subject?.name || "No subject"}
-                      </div>
-                    </div>
-                    <NexusBadge color={overdue ? "red" : (a.priority as any) || "muted"}>
-                      {overdue ? "Overdue" : a.priority}
-                    </NexusBadge>
-                  </div>
-                )
-              })}
+      {/* Focus + AI Tutor row */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2, ease: EASE }} className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Focus ring */}
+        <div className="rounded-xl border border-black/[0.06] bg-white p-6 flex flex-col items-center">
+          <div className="font-mono text-[9px] tracking-[0.25em] text-black/40 mb-4">FOCUS SCORE</div>
+          <div className="relative h-32 w-32">
+            <svg viewBox="0 0 120 120" className="-rotate-90">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(17,17,17,0.06)" strokeWidth="4" />
+              <motion.circle
+                cx="60" cy="60" r="52" fill="none" stroke="#6C63FF" strokeWidth="4" strokeLinecap="round"
+                strokeDasharray="326.7"
+                initial={{ strokeDashoffset: 326.7 }}
+                animate={{ strokeDashoffset: 326.7 - (focusScore / 100) * 326.7 }}
+                transition={{ duration: 1, ease: EASE }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="text-2xl font-semibold" style={{ fontFamily: "var(--font-display)" }}>{focusScore}%</div>
+              <div className="font-mono text-[8px] tracking-[0.15em] text-black/40">OF TARGET</div>
             </div>
-          )}
-        </NexusCard>
-
-        <NexusCard className="p-6">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Upcoming Exams
-            </h3>
-            <button
-              onClick={() => navigate("exams")}
-              className="text-xs text-[#6C63FF] hover:underline flex items-center gap-1"
-            >
-              View all
-              <ArrowRight className="h-3 w-3" />
-            </button>
           </div>
-          {upcomingExams.length === 0 ? (
-            <NexusEmptyState
-              icon={<CalendarClock className="h-5 w-5" />}
-              title="No exams coming up."
-              description="Add your next exam to start preparing."
-              action={<NexusButton size="sm" onClick={() => navigate("exams")}>Add exam</NexusButton>}
-            />
-          ) : (
-            <div className="space-y-2">
-              {upcomingExams.map((e) => {
-                const days = Math.max(
-                  0,
-                  Math.ceil((new Date(e.examDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-                )
-                const urgency = days <= 3 ? "red" : days <= 7 ? "amber" : "muted"
-                return (
-                  <div
-                    key={e.id}
-                    className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
-                  >
-                    <div className="h-10 w-10 rounded-lg bg-[#FFB020]/10 flex items-center justify-center text-[#FFB020]">
-                      <CalendarClock className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">{e.title}</div>
-                      <div className="text-[10px] text-muted-foreground">
-                        {e.subject?.name || "No subject"} •{" "}
-                        {new Date(e.examDate).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-base font-semibold">{days}d</div>
-                      <div className="text-[10px] text-muted-foreground">left</div>
-                    </div>
-                    <NexusProgressRing
-                      progress={e.preparationProgress}
-                      size={32}
-                      stroke={3}
-                      label={<span className="text-[9px]">{e.preparationProgress}%</span>}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </NexusCard>
-      </div>
+          <button
+            onClick={() => navigate("focus")}
+            className="group mt-5 inline-flex items-center gap-2 rounded-full bg-ink text-white py-2.5 pl-6 pr-5 text-[11px] font-medium tracking-[0.15em] hover:bg-iris transition-colors duration-300"
+          >
+            START FOCUS
+            <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
+          </button>
+        </div>
 
-      {/* Subjects + goals + habits + AI tutor shortcut */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Subject progress */}
-        <NexusCard className="lg:col-span-2 p-6">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Subject Progress
-            </h3>
-            <button
-              onClick={() => navigate("subjects")}
-              className="text-xs text-[#6C63FF] hover:underline flex items-center gap-1"
-            >
-              View all
-              <ArrowRight className="h-3 w-3" />
-            </button>
+        {/* Subjects */}
+        <div className="lg:col-span-2 rounded-xl border border-black/[0.06] bg-white p-6">
+          <div className="flex items-center justify-between mb-4">
+            <span className="font-mono text-[9px] tracking-[0.25em] text-black/40 font-medium">SUBJECTS</span>
+            <button onClick={() => navigate("subjects")} className="font-mono text-[9px] text-iris hover:underline">VIEW ALL →</button>
           </div>
           {subjects.length === 0 ? (
-            <NexusEmptyState
-              icon={<Target className="h-5 w-5" />}
-              title="No subjects yet."
-              description="Add your first subject to start tracking."
-              action={<NexusButton size="sm" onClick={() => navigate("subjects")}>Add subject</NexusButton>}
-            />
+            <div className="py-6 text-center text-sm text-black/40">No subjects yet. <button onClick={() => navigate("subjects")} className="text-iris hover:underline">Add one →</button></div>
           ) : (
-            <div className="grid sm:grid-cols-2 gap-3">
-              {subjects.slice(0, 4).map((s) => {
+            <div className="space-y-3">
+              {subjects.slice(0, 5).map((s, idx) => {
                 const chapters = s.chapters || []
                 const completed = chapters.filter((c) => c.status === "completed").length
                 const pct = chapters.length ? (completed / chapters.length) * 100 : 0
                 return (
-                  <button
-                    key={s.id}
-                    onClick={() => navigate("subject_detail", { subjectId: s.id })}
-                    className="text-left rounded-xl border border-border bg-card p-4 hover:border-[#6C63FF]/30 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div
-                        className="h-9 w-9 rounded-lg flex items-center justify-center text-sm font-semibold"
-                        style={{ backgroundColor: `${s.color}15`, color: s.color }}
-                      >
-                        {s.name.slice(0, 2).toUpperCase()}
+                  <button key={s.id} onClick={() => navigate("subject_detail", { subjectId: s.id })} className="w-full text-left group flex items-center gap-4">
+                    <span className="font-mono text-[9px] text-black/30 w-6">{String(idx + 1).padStart(2, "0")}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[12px] font-medium text-ink truncate">{s.name}</span>
+                        <span className="font-mono text-[8px] text-black/40">{Math.round(pct)}%</span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate">{s.name}</div>
-                        <div className="text-[10px] text-muted-foreground">
-                          {chapters.length} chapters
-                        </div>
+                      <div className="h-[5px] overflow-hidden rounded-full bg-black/[0.06]">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 1, ease: EASE }}
+                          className="h-full rounded-full"
+                          style={{ backgroundColor: s.color }}
+                        />
                       </div>
                     </div>
-                    <NexusProgressBar progress={pct} color={s.color} />
-                    <div className="flex items-center justify-between mt-1.5 text-[10px] text-muted-foreground">
-                      <span>{Math.round(pct)}% complete</span>
-                      <span>{completed}/{chapters.length}</span>
-                    </div>
+                    <ArrowRight className="h-3.5 w-3.5 text-black/20 group-hover:text-ink group-hover:translate-x-0.5 transition-all" />
                   </button>
                 )
               })}
             </div>
           )}
-        </NexusCard>
-
-        {/* Goals + Habits */}
-        <div className="space-y-4">
-          <NexusCard className="p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Goals
-              </h3>
-              <button
-                onClick={() => navigate("goals")}
-                className="text-xs text-[#6C63FF] hover:underline"
-              >
-                View
-              </button>
-            </div>
-            {goals.length === 0 ? (
-              <div className="text-center py-4">
-                <Target className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-                <div className="text-xs text-muted-foreground">No goals yet</div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {goals.slice(0, 2).map((g) => (
-                  <div key={g.id}>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="font-medium truncate">{g.title}</span>
-                      <span className="text-muted-foreground">{g.progress}%</span>
-                    </div>
-                    <NexusProgressBar
-                      progress={g.progress}
-                      color={g.status === "at_risk" ? "#FFB020" : "#B8FF6A"}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </NexusCard>
-
-          <NexusCard className="p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Habits Today
-              </h3>
-              <button
-                onClick={() => navigate("habits")}
-                className="text-xs text-[#6C63FF] hover:underline"
-              >
-                View
-              </button>
-            </div>
-            {habits.length === 0 ? (
-              <div className="text-center py-4">
-                <Flame className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-                <div className="text-xs text-muted-foreground">No habits tracked</div>
-              </div>
-            ) : (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl font-semibold">{habitCompletionRate}%</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {todayHabitLogs.length}/{habits.length} today
-                  </span>
-                </div>
-                <NexusProgressBar progress={habitCompletionRate} color="#6C63FF" />
-              </div>
-            )}
-          </NexusCard>
         </div>
-      </div>
+      </motion.div>
 
-      {/* AI tutor shortcut + achievements */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <NexusCard
-          hover
-          onClick={() => navigate("ai-tutor")}
-          className="p-6 relative overflow-hidden cursor-pointer"
-        >
-          <div className="absolute -top-10 -right-10 h-32 w-32 bg-[#4238D6]/15 blur-3xl" />
-          <div className="relative flex items-center gap-5">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#4238D6] flex items-center justify-center shadow-glow">
-              <Brain className="h-7 w-7 text-white" />
-            </div>
-            <div className="flex-1">
-              <div className="text-base font-semibold">Ask NEXUS AI Tutor</div>
-              <div className="text-sm text-muted-foreground mt-1">
-                Get step-by-step explanations, quizzes, and examples powered by Gemini.
-              </div>
-            </div>
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          </div>
-        </NexusCard>
-
-        <NexusCard className="p-6">
+      {/* Goals + Habits + AI Tutor */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25, ease: EASE }} className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Goals */}
+        <div className="rounded-xl border border-black/[0.06] bg-white p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Recent Achievements
-            </h3>
-            <button
-              onClick={() => navigate("achievements")}
-              className="text-xs text-[#6C63FF] hover:underline"
-            >
-              View all
-            </button>
+            <span className="font-mono text-[9px] tracking-[0.25em] text-black/40 font-medium">GOALS</span>
+            <button onClick={() => navigate("goals")} className="font-mono text-[9px] text-iris hover:underline">VIEW →</button>
           </div>
-          {achievements.length === 0 ? (
-            <div className="text-center py-4">
-              <Award className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-              <div className="text-xs text-muted-foreground">
-                Complete a focus session to unlock your first achievement.
-              </div>
-            </div>
+          {goals.length === 0 ? (
+            <div className="py-4 text-center text-xs text-black/40">No goals yet</div>
           ) : (
-            <div className="grid grid-cols-3 gap-2">
-              {achievements.slice(0, 3).map((a) => (
-                <div
-                  key={a.id}
-                  className="rounded-xl border border-border bg-card p-3 text-center"
-                >
-                  <div className="h-8 w-8 rounded-full bg-[#4238D6]/15 text-[#4238D6] mx-auto mb-1.5 flex items-center justify-center">
-                    <Award className="h-4 w-4" />
+            <div className="space-y-3">
+              {goals.slice(0, 2).map((g) => (
+                <div key={g.id}>
+                  <div className="flex items-center justify-between text-[11px] mb-1">
+                    <span className="font-medium truncate">{g.title}</span>
+                    <span className="font-mono text-black/40">{g.progress}%</span>
                   </div>
-                  <div className="text-[10px] font-medium truncate">{a.title}</div>
+                  <div className="h-[5px] overflow-hidden rounded-full bg-black/[0.06]">
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${g.progress}%` }} transition={{ duration: 1, ease: EASE }} className="h-full rounded-full bg-ink" />
+                  </div>
                 </div>
               ))}
             </div>
           )}
-        </NexusCard>
-      </div>
+        </div>
+
+        {/* Habits */}
+        <div className="rounded-xl border border-black/[0.06] bg-white p-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="font-mono text-[9px] tracking-[0.25em] text-black/40 font-medium">HABITS</span>
+            <button onClick={() => navigate("habits")} className="font-mono text-[9px] text-iris hover:underline">VIEW →</button>
+          </div>
+          {habits.length === 0 ? (
+            <div className="py-4 text-center text-xs text-black/40">No habits tracked</div>
+          ) : (
+            <div>
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-2xl font-semibold" style={{ fontFamily: "var(--font-display)" }}>{habitCompletionRate}%</span>
+                <span className="font-mono text-[8.5px] tracking-[0.15em] text-black/40">{todayHabitLogs.length}/{habits.length} TODAY</span>
+              </div>
+              <div className="h-[5px] overflow-hidden rounded-full bg-black/[0.06]">
+                <motion.div initial={{ width: 0 }} animate={{ width: `${habitCompletionRate}%` }} transition={{ duration: 1, ease: EASE }} className="h-full rounded-full bg-lime" />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* AI Tutor — dark accent card */}
+        <button
+          onClick={() => navigate("ai-tutor")}
+          className="group rounded-xl bg-ink text-white p-5 text-left hover:bg-coal transition-colors duration-300"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <span className="font-mono text-[9px] tracking-[0.25em] text-white/40 font-medium">AI TUTOR</span>
+            <Brain className="h-4 w-4 text-iris" strokeWidth={2.2} />
+          </div>
+          <div className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>Ask anything.</div>
+          <div className="text-xs text-white/40 mt-1">Powered by Gemini. Always online.</div>
+          <div className="mt-4 flex items-center gap-1 font-mono text-[9px] tracking-[0.2em] text-iris">
+            ASK NOW
+            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" strokeWidth={2.2} />
+          </div>
+        </button>
+      </motion.div>
     </div>
   )
 }
