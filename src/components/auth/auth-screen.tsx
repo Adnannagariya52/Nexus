@@ -187,8 +187,8 @@ function LoginCard() {
         setLoading(false)
         return
       }
-      // Force a full page reload so the server-side Supabase cookie is synced
-      window.location.href = "/"
+      // Auth state change will trigger navigation via page.tsx
+      setView("app")
     } catch {
       setError("Something went wrong. Please try again.")
       setLoading(false)

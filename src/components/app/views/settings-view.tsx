@@ -239,10 +239,8 @@ function SecuritySection({ email }: { email?: string | null }) {
   const [confirmText, setConfirmText] = React.useState("")
 
   async function deleteAccount() {
-    // In production, this would call an API endpoint
-    // For demo: sign out and explain
     await signOut()
-    toast.success("Account deletion requested. (Demo mode — your data persists in the database.)")
+    setTimeout(() => { window.location.href = "/" }, 300)
   }
 
   return (
@@ -273,7 +271,13 @@ function SecuritySection({ email }: { email?: string | null }) {
             <NexusButton
               variant="outline"
               size="sm"
-              onClick={() => signOut()}
+              onClick={async () => {
+                await signOut()
+                localStorage.removeItem("nexus-app-state")
+                localStorage.removeItem("nexus-app-state-v2")
+                // Full page reload to clear all state
+                window.location.replace("/")
+              }}
               className="gap-1.5"
             >
               <LogOut className="h-3.5 w-3.5" />

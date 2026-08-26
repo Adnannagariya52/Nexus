@@ -19,17 +19,8 @@ export function NexusAuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
-    // Use getSession() which reads from the cookie synchronously
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null)
-      setLoading(false)
-    })
-
-    // Also try getUser() for server-side verification
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        setUser(data.user)
-      }
+      setUser(data.user ?? null)
       setLoading(false)
     })
 
@@ -44,7 +35,37 @@ export function NexusAuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase])
 
   const signOut = React.useCallback(async () => {
-    await supabase.auth.signOut()
+    // 1. Get session to get access token
+    const { data } = await supabase.auth.getSession()
+    const token = data.session?.access_token
+
+    // 2. Call Supabase logout API to revoke server session
+    if (token) {
+      try {
+        await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/logout`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          },
+        })
+      } catch {}
+    }
+
+    // 3. Call supabase signOut
+    try { await supabase.auth.signOut() } catch {}
+
+    // 4. Delete ALL cookies
+    document.cookie.split(";").forEach(function(c) {
+      const name = c.split("=")[0].trim()
+      if (name) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=localhost`
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=.localhost`
+      }
+    })
+
+    // 5. Clear local state
     setUser(null)
   }, [supabase])
 

@@ -17,11 +17,8 @@ export const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
 /* ------------------------------- media queries ----------------------------- */
 
 export function useMedia(query: string): boolean {
-  // Lazy init against the live viewport so the first paint is already correct
-  // (prevents a mobile/desktop layout flash on mount).
-  const [matches, setMatches] = useState<boolean>(() =>
-    typeof window === "undefined" ? false : window.matchMedia(query).matches
-  );
+  // Always start with false to prevent hydration mismatch
+  const [matches, setMatches] = useState<boolean>(false);
   useEffect(() => {
     const mq = window.matchMedia(query);
     const onChange = () => setMatches(mq.matches);
@@ -39,12 +36,8 @@ export const usePrefersReducedMotion = () =>
 /* ------------------------------ viewport size ------------------------------ */
 
 export function useViewportSize() {
-  // Read the real viewport on first render — no 1280x800 placeholder jump.
-  const [size, setSize] = useState(() =>
-    typeof window === "undefined"
-      ? { w: 1440, h: 900 }
-      : { w: window.innerWidth, h: window.innerHeight }
-  );
+  // Always start with default to prevent hydration mismatch
+  const [size, setSize] = useState<{ w: number; h: number }>({ w: 1440, h: 900 });
   useEffect(() => {
     let frame = 0;
     const update = () => {

@@ -1,11 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { useNexusAuth } from "@/components/providers/nexus-auth-provider"
 import { motion, AnimatePresence } from "framer-motion"
 import { useApp, type AppRoute } from "@/lib/store"
+import { useNexusAuth } from "@/components/providers/nexus-auth-provider"
 import { DataProvider, useData } from "@/lib/data-client"
-import { NexusLogo } from "@/components/nexus/nexus-logo"
 import { Sidebar } from "@/components/app/sidebar"
 import { AppHeader } from "@/components/app/app-header"
 import { CommandPalette } from "@/components/app/command-palette"
@@ -19,12 +18,14 @@ export function AppShell() {
   const { user, loading } = useNexusAuth()
   const setView = useApp((s) => s.setView)
 
-  if (loading) return <FullScreenProgress />
+  React.useEffect(() => {
+    if (!loading && !user) {
+      setView("landing")
+    }
+  }, [loading, user, setView])
 
-  if (!user) {
-    setView("login")
-    return <FullScreenProgress />
-  }
+  if (loading) return <FullScreenProgress />
+  if (!user) return <FullScreenProgress />
 
   return (
     <DataProvider>
@@ -40,7 +41,6 @@ export function AppShell() {
               </div>
             </main>
           </div>
-
           <MobileTabBar />
           <CommandPalette />
           <NotificationsDrawer />
@@ -54,10 +54,14 @@ function OnboardingGate({ children }: { children: React.ReactNode }) {
   const { snapshot, loading } = useData()
   const setView = useApp((s) => s.setView)
 
+  React.useEffect(() => {
+    if (!loading && snapshot && !snapshot.profile?.onboardingCompleted) {
+      setView("onboarding")
+    }
+  }, [loading, snapshot, setView])
+
   if (loading || !snapshot) return <FullScreenProgress />
-  if (!snapshot.profile?.onboardingCompleted) {
-    return <OnboardingFlow />
-  }
+  if (!snapshot.profile?.onboardingCompleted) return <OnboardingFlow />
   return <>{children}</>
 }
 
@@ -79,8 +83,6 @@ function RouteRenderer() {
 }
 
 function RouteView({ route }: { route: AppRoute }) {
-  const Lazy = React.lazy(() => Promise.resolve({ default: PLACEHOLDER }))
-  // Direct imports kept simple — no actual lazy
   switch (route) {
     case "dashboard":
       return <DashboardView />
@@ -119,7 +121,6 @@ function RouteView({ route }: { route: AppRoute }) {
   }
 }
 
-// Imports — these components are defined in separate files; we use require to keep file count manageable
 import { DashboardView } from "@/components/app/views/dashboard-view"
 import { SubjectsView } from "@/components/app/views/subjects-view"
 import { SubjectDetailView } from "@/components/app/views/subject-detail-view"
@@ -136,5 +137,3 @@ import { CareerView } from "@/components/app/views/career-view"
 import { AITutorView } from "@/components/app/views/ai-tutor-view"
 import { ProfileView } from "@/components/app/views/profile-view"
 import { SettingsView } from "@/components/app/views/settings-view"
-
-const PLACEHOLDER = () => null

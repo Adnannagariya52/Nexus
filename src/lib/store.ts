@@ -96,9 +96,9 @@ export const useApp = create<AppState>()(
       setAccent: (a) => set({ accent: a }),
     }),
     {
-      name: "nexus-app-state",
+      name: "nexus-app-state-v2",
+      version: 2,
       partialize: (s) => ({
-        view: s.view,
         route: s.route,
         sidebarCollapsed: s.sidebarCollapsed,
         accent: s.accent,

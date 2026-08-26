@@ -70,6 +70,7 @@ export function MobileSidebar() {
   const setOpen = useApp((s) => s.setMobileSidebarOpen)
   const route = useApp((s) => s.route)
   const navigate = useApp((s) => s.navigate)
+  const { signOut } = useNexusAuth()
   const { snapshot } = useData()
 
   return (
@@ -144,7 +145,12 @@ export function MobileSidebar() {
                 </button>
               </div>
               <button
-                onClick={() => signOut()}
+                onClick={async () => {
+                  await signOut()
+                  localStorage.removeItem("nexus-app-state")
+                  localStorage.removeItem("nexus-app-state-v2")
+                  window.location.replace("/")
+                }}
                 className="flex items-center gap-2 w-full h-10 px-3 rounded-lg hover:bg-accent text-sm text-[#E5484D]"
               >
                 <LogOut className="h-4 w-4" />

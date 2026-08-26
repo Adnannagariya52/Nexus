@@ -4,7 +4,6 @@ import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/providers/theme-provider"
-import { NexusSessionProvider } from "@/components/providers/session-provider"
 import { NexusAuthProvider } from "@/components/providers/nexus-auth-provider"
 
 const geist = Geist({
@@ -56,11 +55,9 @@ export default function RootLayout({
           disableTransitionOnChange={false}
         >
           <NexusAuthProvider>
-            <NexusSessionProvider>
-              {children}
-              <Toaster />
-              <SonnerToaster />
-            </NexusSessionProvider>
+            {children}
+            <Toaster />
+            <SonnerToaster />
           </NexusAuthProvider>
         </ThemeProvider>
       </body>

@@ -10,44 +10,58 @@ import { AppShell } from "@/components/app/app-shell"
 import { ToastRegion } from "@/components/nexus/toast-region"
 import { FullScreenProgress } from "@/components/nexus/full-screen-progress"
 
+const AUTH_VIEWS = ["login", "signup", "forgot", "reset"] as const
+
 export default function Page() {
   const { user, loading } = useNexusAuth()
   const view = useApp((s) => s.view)
   const setView = useApp((s) => s.setView)
 
+  // On mount, check URL for ?view= param
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    const v = params.get("view")
+    if (v && ["landing", "login", "signup", "forgot", "reset", "onboarding", "app"].includes(v)) {
+      setView(v as any)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Sync view with auth state
   React.useEffect(() => {
     if (loading) return
     if (user) {
-      // If on a marketing/auth view, transition to app
-      if (view === "landing" || view === "login" || view === "signup" || view === "forgot") {
+      if (view === "landing" || AUTH_VIEWS.includes(view as any)) {
         setView("app")
+      }
+    } else {
+      if (view === "app" || view === "onboarding") {
+        setView("landing")
       }
     }
   }, [user, loading, view, setView])
 
-  // Route param sync (for ?view=login deep links)
-  React.useEffect(() => {
-    if (typeof window === "undefined") return
-    const params = new URLSearchParams(window.location.search)
-    const v = params.get("view") as typeof view | null
-    if (v && ["landing", "login", "signup", "forgot", "reset", "onboarding", "app"].includes(v)) {
-      setView(v)
-    }
-  }, [])
+  // Determine what to render
+  const isAuthView = AUTH_VIEWS.includes(view as any)
 
   return (
     <>
       <ToastRegion />
-      {loading && view !== "landing" && <FullScreenProgress />}
-      <React.Suspense fallback={<FullScreenProgress />}>
-        {view === "landing" && <LandingPage />}
-        {(view === "login" || view === "signup" || view === "forgot" || view === "reset") && (
-          <AuthScreen mode={view} />
-        )}
-        {view === "onboarding" && <OnboardingFlow />}
-        {view === "app" && <AppShell />}
-      </React.Suspense>
+      {/* Show loading screen only when auth is loading AND we're not on landing or auth pages */}
+      {loading && view !== "landing" && !isAuthView && <FullScreenProgress />}
+
+      {/* Landing page — show when view is landing OR when auth is loading and no specific view requested */}
+      {view === "landing" && <LandingPage />}
+
+      {/* Auth screens */}
+      {isAuthView && <AuthScreen mode={view as any} />}
+
+      {/* Onboarding */}
+      {view === "onboarding" && <OnboardingFlow />}
+
+      {/* App */}
+      {view === "app" && <AppShell />}
     </>
   )
 }
