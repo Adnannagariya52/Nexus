@@ -10,10 +10,9 @@ import { AppShell } from "@/components/app/app-shell"
 import { ToastRegion } from "@/components/nexus/toast-region"
 import { FullScreenProgress } from "@/components/nexus/full-screen-progress"
 
-// Disable SSR for the landing page — it uses heavy client-only animations
 const LandingPage = dynamic(
   () => import("@/components/landing/landing-page").then(m => ({ default: m.LandingPage })),
-  { ssr: false, loading: () => null }
+  { ssr: false, loading: () => <FullScreenProgress /> }
 )
 
 const AUTH_VIEWS = new Set(["login", "signup", "forgot", "reset"])
@@ -23,10 +22,9 @@ export default function Page() {
   const { user, loading } = useNexusAuth()
   const view = useApp((s) => s.view)
   const setView = useApp((s) => s.setView)
-  const [mounted, setMounted] = React.useState(false)
 
+  // On mount: read URL param
   React.useEffect(() => {
-    setMounted(true)
     if (typeof window === "undefined") return
     const params = new URLSearchParams(window.location.search)
     const v = params.get("view")
@@ -35,6 +33,7 @@ export default function Page() {
     }
   }, [setView])
 
+  // Sync view with auth state
   React.useEffect(() => {
     if (loading) return
     if (user) {
@@ -47,16 +46,6 @@ export default function Page() {
       }
     }
   }, [user, loading, view, setView])
-
-  // Before mount, show loading screen
-  if (!mounted) {
-    return (
-      <>
-        <ToastRegion />
-        <FullScreenProgress />
-      </>
-    )
-  }
 
   const isAuthView = AUTH_VIEWS.has(view)
 
