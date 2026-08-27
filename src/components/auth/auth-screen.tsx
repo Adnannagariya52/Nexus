@@ -183,11 +183,15 @@ function LoginCard() {
         password,
       })
       if (error) {
-        setError("Email or password is incorrect.")
+        if (error.code === "email_not_confirmed") {
+          setError("Please confirm your email first. Check your inbox for the confirmation link.")
+        } else {
+          setError("Email or password is incorrect.")
+        }
         setLoading(false)
         return
       }
-      // Auth state change will trigger navigation via page.tsx
+      // Auth state change will trigger navigation
       setView("app")
     } catch {
       setError("Something went wrong. Please try again.")
@@ -332,10 +336,11 @@ function SignupCard() {
         return
       }
       if (data.session) {
-        window.location.href = "/"
+        // Auth state change will trigger navigation
+        setView("app")
       } else if (data.user) {
-        setView("login")
-        setError("Account created. Please check your email to confirm.")
+        // User created but needs email confirmation
+        setConfirmationNeeded(true)
         setLoading(false)
       } else {
         setError("Account created. Please check your email to confirm.")

@@ -240,7 +240,8 @@ function SecuritySection({ email }: { email?: string | null }) {
 
   async function deleteAccount() {
     await signOut()
-    setTimeout(() => { window.location.href = "/" }, 300)
+    localStorage.clear()
+    setTimeout(() => { window.location.href = "/" }, 500)
   }
 
   return (
@@ -272,11 +273,11 @@ function SecuritySection({ email }: { email?: string | null }) {
               variant="outline"
               size="sm"
               onClick={async () => {
-                await signOut()
-                localStorage.removeItem("nexus-app-state")
-                localStorage.removeItem("nexus-app-state-v2")
-                // Full page reload to clear all state
-                window.location.replace("/")
+                // Call signOut and IMMEDIATELY redirect (don't wait)
+                signOut()
+                localStorage.clear()
+                // Redirect immediately — the page reload will sync with the revoked session
+                window.location.href = "/"
               }}
               className="gap-1.5"
             >

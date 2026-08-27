@@ -49,7 +49,7 @@ export default function Page() {
 
   const isAuthView = AUTH_VIEWS.has(view)
 
-  // While auth is loading, show FullScreenProgress for everything
+  // Show loading screen while auth is being checked
   if (loading) {
     return (
       <>

@@ -147,9 +147,9 @@ export function MobileSidebar() {
               <button
                 onClick={async () => {
                   await signOut()
-                  localStorage.removeItem("nexus-app-state")
-                  localStorage.removeItem("nexus-app-state-v2")
-                  window.location.replace("/")
+                  localStorage.clear()
+                  
+                  window.location.href = "/"
                 }}
                 className="flex items-center gap-2 w-full h-10 px-3 rounded-lg hover:bg-accent text-sm text-[#E5484D]"
               >
