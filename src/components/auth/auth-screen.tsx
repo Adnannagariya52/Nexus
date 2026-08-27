@@ -306,6 +306,7 @@ function SignupCard() {
   const [show, setShow] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
+  const [confirmationNeeded, setConfirmationNeeded] = React.useState(false)
 
   const strength = strengthOf(password)
   const strengthLabels = ["Too short", "Weak", "Fair", "Good", "Strong"]
@@ -336,21 +337,57 @@ function SignupCard() {
         return
       }
       if (data.session) {
-        // Auth state change will trigger navigation
+        // Auth state change listener in NexusAuthProvider will pick this up
+        // and the page.tsx redirect will move us into the app.
         setView("app")
       } else if (data.user) {
         // User created but needs email confirmation
         setConfirmationNeeded(true)
         setLoading(false)
       } else {
-        setError("Account created. Please check your email to confirm.")
-        setView("login")
+        // No user, no session — unusual but handle gracefully
+        setConfirmationNeeded(true)
         setLoading(false)
       }
-    } catch {
-      setError("Something went wrong. Please try again.")
+    } catch (err: any) {
+      console.error("[Signup] error:", err)
+      setError(err?.message || "Something went wrong. Please try again.")
       setLoading(false)
     }
+  }
+
+  if (confirmationNeeded) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center"
+      >
+        <div className="inline-flex h-14 w-14 rounded-full bg-[#B8FF6A]/10 items-center justify-center mb-5">
+          <CheckCircle2 className="h-7 w-7 text-[#B8FF6A]" />
+        </div>
+        <h2 className="text-2xl font-semibold">Check your inbox</h2>
+        <p className="mt-2 text-sm text-white/50">
+          We sent a confirmation link to <span className="text-white">{email}</span>.
+          Click the link to activate your account, then come back to log in.
+        </p>
+        <Button
+          onClick={() => setView("login")}
+          className="mt-6 w-full h-11 bg-gradient-to-br from-[#6C63FF] to-[#4238D6] border-0"
+        >
+          Back to login
+        </Button>
+        <button
+          onClick={() => {
+            setConfirmationNeeded(false)
+            setLoading(false)
+          }}
+          className="mt-3 text-xs text-white/40 hover:text-white/70"
+        >
+          Use a different email
+        </button>
+      </motion.div>
+    )
   }
 
   return (
