@@ -45,6 +45,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3201061087154515"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body
         className={`${geist.variable} ${bricolage.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
